@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { AppLogger } from '../../../common/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   DomainEventBus,
   generateEventId,
@@ -24,12 +23,13 @@ const INFLATION_OBSERVATION_DAYS = 7;
 
 @Injectable()
 export class DashboardService {
+  private readonly logger = new Logger(DashboardService.name);
+
   // Track faucet emissions (rewards/NPC) — populated externally or via events
   private faucetRewards = 0;
   private faucetNpcPurchases = 0;
 
   constructor(
-    private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
     private readonly marketService: MarketService,
     private readonly contractsService: ContractsService,

@@ -1,14 +1,11 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { MarketService } from '../src/modules/economy/market.service';
 import { DomainEventBus } from '../src/common/domain-events';
-import { AppLogger } from '../src/common/logger.service';
 
 function createMarketService() {
-  const logger = new AppLogger();
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
-  const service = new MarketService(logger, eventBus);
-  return { service, eventBus, logger };
+  const service = new MarketService(eventBus);
+  return { service, eventBus };
 }
 
 describe('MarketService', () => {

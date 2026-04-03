@@ -29,7 +29,7 @@ function createGateway() {
   const observability = new ObservabilityService();
   const actionService = new ActionService(eventBus, simulationService);
   const tickService = new TickService(eventBus, simulationService, actionService, observability);
-  return new RealtimeGateway(logger, simulationService, tickService, actionService);
+  return new RealtimeGateway(simulationService, tickService, actionService);
 }
 
 describe('RealtimeGateway', () => {

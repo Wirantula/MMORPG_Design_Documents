@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,7 +10,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { AppLogger } from '../../common/logger.service';
 import { SimulationService } from '../simulation/simulation.service';
 import { TickService } from '../simulation/tick.service';
 import { ActionService } from '../simulation/actions/action.service';
@@ -31,11 +31,12 @@ import type {
 export class RealtimeGateway
   implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
 {
+  private readonly logger = new Logger(RealtimeGateway.name);
+
   @WebSocketServer()
   server!: Server;
 
   constructor(
-    private readonly logger: AppLogger,
     private readonly simulationService: SimulationService,
     private readonly tickService: TickService,
     private readonly actionService: ActionService,

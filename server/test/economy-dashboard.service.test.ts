@@ -3,16 +3,13 @@ import { DashboardService } from '../src/modules/economy/dashboards/dashboard.se
 import { MarketService } from '../src/modules/economy/market.service';
 import { ContractsService } from '../src/modules/economy/contracts/contracts.service';
 import { DomainEventBus } from '../src/common/domain-events';
-import { AppLogger } from '../src/common/logger.service';
 
 function createServices() {
-  const logger = new AppLogger();
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
-  const marketService = new MarketService(logger, eventBus);
-  const contractsService = new ContractsService(logger, eventBus, marketService);
-  const dashboardService = new DashboardService(logger, eventBus, marketService, contractsService);
-  return { dashboardService, marketService, contractsService, eventBus, logger };
+  const marketService = new MarketService(eventBus);
+  const contractsService = new ContractsService(eventBus, marketService);
+  const dashboardService = new DashboardService(eventBus, marketService, contractsService);
+  return { dashboardService, marketService, contractsService, eventBus };
 }
 
 /** Helper: create a listing + order + match to generate price history. */

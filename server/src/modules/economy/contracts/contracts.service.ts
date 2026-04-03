@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { AppLogger } from '../../../common/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   DomainEventBus,
   generateEventId,
@@ -17,10 +16,10 @@ function nextContractId(): string {
 
 @Injectable()
 export class ContractsService {
+  private readonly logger = new Logger(ContractsService.name);
   private readonly contracts = new Map<string, Contract>();
 
   constructor(
-    private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
     private readonly marketService: MarketService,
   ) {}
