@@ -1,0 +1,220 @@
+{
+  "nodes": [
+    {
+      "id": "universe-cybaworld",
+      "name": "CybaWorld",
+      "type": "universe",
+      "parent_id": null,
+      "environmental_tags": ["digital", "persistent"],
+      "travel_cost": 0,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "planet-terravyn",
+      "name": "Terravyn",
+      "type": "planet",
+      "parent_id": "universe-cybaworld",
+      "environmental_tags": ["temperate", "earth-like"],
+      "travel_cost": 0,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "planet-volcanis",
+      "name": "Volcanis",
+      "type": "planet",
+      "parent_id": "universe-cybaworld",
+      "environmental_tags": ["volcanic", "high-gravity"],
+      "travel_cost": 500,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "planet-aquarion",
+      "name": "Aquarion",
+      "type": "planet",
+      "parent_id": "universe-cybaworld",
+      "environmental_tags": ["oceanic", "low-gravity"],
+      "travel_cost": 300,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "plane-overworld",
+      "name": "Overworld",
+      "type": "plane",
+      "parent_id": "planet-terravyn",
+      "environmental_tags": ["surface", "daylight"],
+      "travel_cost": 0,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "plane-underdark",
+      "name": "Underdark",
+      "type": "plane",
+      "parent_id": "planet-terravyn",
+      "environmental_tags": ["subterranean", "darkness"],
+      "travel_cost": 100,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "region-verdant-fields",
+      "name": "Verdant Fields",
+      "type": "region",
+      "parent_id": "plane-overworld",
+      "environmental_tags": ["grassland", "safe"],
+      "travel_cost": 0,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "region-ironridge",
+      "name": "Ironridge Mountains",
+      "type": "region",
+      "parent_id": "plane-overworld",
+      "environmental_tags": ["mountain", "mining"],
+      "travel_cost": 50,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "region-silverwood",
+      "name": "Silverwood Forest",
+      "type": "region",
+      "parent_id": "plane-overworld",
+      "environmental_tags": ["forest", "wild"],
+      "travel_cost": 25,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "region-ashen-coast",
+      "name": "Ashen Coast",
+      "type": "region",
+      "parent_id": "plane-overworld",
+      "environmental_tags": ["coastal", "trade-route"],
+      "travel_cost": 10,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "region-crystal-caverns",
+      "name": "Crystal Caverns",
+      "type": "region",
+      "parent_id": "plane-underdark",
+      "environmental_tags": ["cave", "crystal", "rare-ores"],
+      "travel_cost": 75,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "region-magma-depths",
+      "name": "Magma Depths",
+      "type": "region",
+      "parent_id": "plane-underdark",
+      "environmental_tags": ["lava", "extreme-heat"],
+      "travel_cost": 150,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "region-ember-wastes",
+      "name": "Ember Wastes",
+      "type": "region",
+      "parent_id": "planet-volcanis",
+      "environmental_tags": ["volcanic", "desolate"],
+      "travel_cost": 200,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "region-coral-expanse",
+      "name": "Coral Expanse",
+      "type": "region",
+      "parent_id": "planet-aquarion",
+      "environmental_tags": ["underwater", "coral"],
+      "travel_cost": 100,
+      "unlock_status": "locked"
+    },
+    {
+      "id": "settlement-haven",
+      "name": "Haven",
+      "type": "settlement_zone",
+      "parent_id": "region-verdant-fields",
+      "environmental_tags": ["town", "starter", "market"],
+      "travel_cost": 0,
+      "unlock_status": "unlocked"
+    },
+    {
+      "id": "settlement-ironhold",
+      "name": "Ironhold",
+      "type": "settlement_zone",
+      "parent_id": "region-ironridge",
+      "environmental_tags": ["town", "mining-hub"],
+      "travel_cost": 20,
+      "unlock_status": "unlocked"
+    }
+  ],
+  "edges": [
+    {
+      "from_node_id": "region-verdant-fields",
+      "to_node_id": "region-ironridge",
+      "travel_time_minutes": 15,
+      "currency_cost": 10,
+      "hazard_level": 1
+    },
+    {
+      "from_node_id": "region-verdant-fields",
+      "to_node_id": "region-silverwood",
+      "travel_time_minutes": 10,
+      "currency_cost": 5,
+      "hazard_level": 2
+    },
+    {
+      "from_node_id": "region-verdant-fields",
+      "to_node_id": "region-ashen-coast",
+      "travel_time_minutes": 20,
+      "currency_cost": 15,
+      "hazard_level": 1
+    },
+    {
+      "from_node_id": "region-ironridge",
+      "to_node_id": "region-silverwood",
+      "travel_time_minutes": 25,
+      "currency_cost": 20,
+      "hazard_level": 3
+    },
+    {
+      "from_node_id": "region-ashen-coast",
+      "to_node_id": "region-silverwood",
+      "travel_time_minutes": 12,
+      "currency_cost": 8,
+      "hazard_level": 2
+    },
+    {
+      "from_node_id": "region-verdant-fields",
+      "to_node_id": "region-crystal-caverns",
+      "travel_time_minutes": 45,
+      "currency_cost": 100,
+      "hazard_level": 5
+    },
+    {
+      "from_node_id": "region-crystal-caverns",
+      "to_node_id": "region-magma-depths",
+      "travel_time_minutes": 30,
+      "currency_cost": 150,
+      "hazard_level": 7
+    },
+    {
+      "from_node_id": "planet-terravyn",
+      "to_node_id": "planet-volcanis",
+      "travel_time_minutes": 120,
+      "currency_cost": 500,
+      "hazard_level": 4
+    },
+    {
+      "from_node_id": "planet-terravyn",
+      "to_node_id": "planet-aquarion",
+      "travel_time_minutes": 90,
+      "currency_cost": 300,
+      "hazard_level": 3
+    },
+    {
+      "from_node_id": "settlement-haven",
+      "to_node_id": "settlement-ironhold",
+      "travel_time_minutes": 20,
+      "currency_cost": 15,
+      "hazard_level": 1
+    }
+  ]
+}
