@@ -144,6 +144,12 @@ export interface NeedsCriticalWarningPayload {
   gameDay: number;
 }
 
+export interface SkillLevelUpPayload {
+  characterId: string;
+  skill: string;
+  newLevel: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -163,6 +169,7 @@ export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedP
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
+export type SkillLevelUp = DomainEvent<'SkillLevelUp', SkillLevelUpPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -183,7 +190,8 @@ export type KnownDomainEvent =
   | ConnectionClosed
   | StatsInitialised
   | LifeStageTransition
-  | NeedsCriticalWarning;
+  | NeedsCriticalWarning
+  | SkillLevelUp;
 
 // ── Listener signature ────────────────────────────────────────────
 
