@@ -1,0 +1,45 @@
+name: Oz Agent - Issue Trigger
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  agent:
+    # Only fire when the label added is exactly "agent"
+    if: github.event.label.name == 'agent'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: warpdotdev/oz-agent-action@main
+        id: oz
+        with:
+          warp_api_key: ${{ secrets.WARP_API_KEY }}
+          profile: ${{ vars.WARP_AGENT_PROFILE || '' }}
+          prompt: |
+            You are an agent on the CybaWorld MMORPG project.
+
+            Your task comes from this GitHub issue:
+            Title: ${{ github.event.issue.title }}
+            Body:
+            ${{ github.event.issue.body }}
+
+            Rules you MUST follow:
+            1. Read AGENTS.md and docs/DEFINITION_OF_DONE.md before starting.
+            2. Read docs/CONTRACT_BOUNDARIES.md — do not touch modules outside your story scope.
+            3. Implement the story. Run `npm run validate` before finishing.
+            4. Open a draft PR with:
+               - Title: matching the issue title
+               - Body: list every file changed and confirm all acceptance criteria are met
+               - Link to this issue: closes #${{ github.event.issue.number }}
+            5. Post a comment on the issue with the PR link using `gh`.
+
+      - name: Report
+        if: always()
+        run: echo "Agent output -> ${{ steps.oz.outputs.agent_output }}"

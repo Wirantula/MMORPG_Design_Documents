@@ -1,0 +1,48 @@
+name: Oz Agent - PR Comment Trigger
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  agent:
+    # Only fire on PR comments that start with /oz
+    if: >
+      github.event.issue.pull_request != null &&
+      startsWith(github.event.comment.body, '/oz')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: warpdotdev/oz-agent-action@main
+        id: oz
+        with:
+          warp_api_key: ${{ secrets.WARP_API_KEY }}
+          profile: ${{ vars.WARP_AGENT_PROFILE || '' }}
+          prompt: |
+            You are an agent on the CybaWorld MMORPG project.
+
+            A team member has asked you to action something on PR #${{ github.event.issue.number }}.
+
+            Their instruction (everything after /oz):
+            ${{ github.event.comment.body }}
+
+            PR context:
+            ${{ github.event.issue.title }}
+            ${{ github.event.issue.body }}
+
+            Rules you MUST follow:
+            1. Read AGENTS.md and docs/DEFINITION_OF_DONE.md before starting.
+            2. Read docs/CONTRACT_BOUNDARIES.md — stay within scope.
+            3. Run `npm run validate` after any code changes.
+            4. Push changes to the existing PR branch (do not open a new PR).
+            5. Post a reply comment on the PR describing exactly what you changed using `gh`.
+
+      - name: Report
+        if: always()
+        run: echo "Agent output -> ${{ steps.oz.outputs.agent_output }}"
