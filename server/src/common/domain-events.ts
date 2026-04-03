@@ -71,6 +71,16 @@ export interface ContractBreachedPayload {
   escrowAmount: number;
 }
 
+export interface TravelArrivedPayload {
+  journeyId: string;
+  characterId: string;
+  fromNodeId: string;
+  toNodeId: string;
+  cargoLost: string[];
+  hazardLog: { segment: number; roll: number; outcome: string }[];
+  arrivedAtWorldMs: number;
+}
+
 export interface EconomyExportCompletedPayload {
   filePath: string;
   rowCount: number;
@@ -105,6 +115,7 @@ export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', Offli
 export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type TravelArrived = DomainEvent<'TravelArrived', TravelArrivedPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
@@ -119,6 +130,7 @@ export type KnownDomainEvent =
   | MarketTradeExecuted
   | ContractCompleted
   | ContractBreached
+  | TravelArrived
   | EconomyExportCompleted
   | AccountCreated
   | AccountLoggedIn

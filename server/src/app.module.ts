@@ -10,6 +10,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CharactersModule } from './modules/characters/characters.module';
 import { WorldModule } from './modules/world/world.module';
+import { TravelModule } from './modules/travel/travel.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { WorldModule } from './modules/world/world.module';
     AuthModule,
     CharactersModule,
     WorldModule,
+    TravelModule,
   ],
   providers: [AppLogger, DomainEventBus],
   exports: [AppLogger, DomainEventBus],

@@ -15,6 +15,11 @@ export interface OrderMatcher {
   matchOrders(currentGameDay: number): number;
 }
 
+/** Minimal interface so TickService can resolve travel arrivals without a hard import cycle. */
+export interface TravelResolver {
+  resolveArrivals(nowMs: number): unknown[];
+}
+
 export interface TickMetrics {
   tickCount: number;
   lastTickDurationMs: number;
@@ -38,6 +43,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _lastTickExpectedMs = 0;
 
   private orderMatcher: OrderMatcher | null = null;
+  private travelResolver: TravelResolver | null = null;
 
   constructor(
     private readonly eventBus: DomainEventBus,
@@ -49,6 +55,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
     this.orderMatcher = matcher;
+  }
+
+  /** Injected by TravelModule after bootstrap so there's no hard dependency. */
+  setTravelResolver(resolver: TravelResolver): void {
+    this.travelResolver = resolver;
   }
 
   /** Called by RealtimeGateway once the WS server is ready. */
@@ -97,6 +108,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     // Run market order matching
     if (this.orderMatcher) {
       this.orderMatcher.matchOrders(gameDay);
+    }
+
+    // Resolve travel arrivals
+    if (this.travelResolver) {
+      this.travelResolver.resolveArrivals(nowMs);
     }
 
     // Detect day change
