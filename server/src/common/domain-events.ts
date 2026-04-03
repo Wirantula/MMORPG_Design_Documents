@@ -106,6 +106,12 @@ export interface CharacterBornPayload {
   };
 }
 
+export interface CharacterDiedPayload {
+  accountId: string;
+  characterId: string;
+  reason: string;
+}
+
 export interface ConnectionEstablishedPayload {
   accountId: string;
   socketId: string;
@@ -151,6 +157,7 @@ export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', Econo
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
+export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
 export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
 export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
@@ -171,6 +178,7 @@ export type KnownDomainEvent =
   | AccountCreated
   | AccountLoggedIn
   | CharacterBorn
+  | CharacterDied
   | ConnectionEstablished
   | ConnectionClosed
   | StatsInitialised
