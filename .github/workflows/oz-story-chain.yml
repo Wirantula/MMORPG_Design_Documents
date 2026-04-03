@@ -1,0 +1,50 @@
+name: Oz Story Chain — Auto-fire next agents on PR merge
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  chain:
+    # Only trigger when the PR was actually merged (not just closed/abandoned)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Extract the story ID from the branch name
+      # Branches are named story/X.Y-slug, e.g. story/2.1-account-schema
+      - name: Extract story ID from branch
+        id: story
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          echo "Branch: $BRANCH"
+          # Match story/X.Y pattern
+          if [[ "$BRANCH" =~ ^story/([0-9]+\.[0-9]+) ]]; then
+            STORY_ID="${BASH_REMATCH[1]}"
+            echo "story_id=$STORY_ID" >> "$GITHUB_OUTPUT"
+            echo "Detected story ID: $STORY_ID"
+          else
+            echo "story_id=" >> "$GITHUB_OUTPUT"
+            echo "Branch does not match story/* pattern — skipping chain."
+          fi
+
+      - name: Fire next agents
+        if: steps.story.outputs.story_id != ''
+        env:
+          WARP_API_KEY: ${{ secrets.WARP_API_KEY }}
+        run: |
+          STORY_ID="${{ steps.story.outputs.story_id }}"
+          echo "Story $STORY_ID merged. Checking for newly unblocked stories..."
+          node tools/scripts/fire-next-stories.mjs --completed="$STORY_ID"
+
+      - name: No story detected
+        if: steps.story.outputs.story_id == ''
+        run: echo "PR branch did not match story/* naming convention — no agents fired."
