@@ -1,0 +1,8 @@
+name: CybaWorld Stack Logs (Service)
+command: docker compose -f infra/compose/docker-compose.yml logs -f {{service}}
+tags: [cybaworld, infra, logs]
+description: Follow logs for one infrastructure service.
+arguments:
+  - name: service
+    description: Compose service to follow (for example postgres or redis).
+    default_value: postgres

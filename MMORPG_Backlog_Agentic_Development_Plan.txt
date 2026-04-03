@@ -1,0 +1,431 @@
+Agile Backlog and Agentic Development Plan
+Epics, stories, user stories, dependencies, delivery workflow and Codex-oriented team structure
+
+[Table 1]
++--------------+--------------------------------------------------------------+
+| Project      | Browser-based fantasy/scifi life-sim MMORPG                  |
++--------------+--------------------------------------------------------------+
+| Document Set | Ground-truth design + agile/agentic execution pack           |
++--------------+--------------------------------------------------------------+
+| Purpose      | Reference document for design, implementation, live ops and  |
+|              | AI-assisted delivery                                         |
++--------------+--------------------------------------------------------------+
+| Version      | v1.0 concept foundation                                      |
++--------------+--------------------------------------------------------------+
+
+
+How this plan should be used
+This document converts the design into an executable product plan. It is structured so that a human product owner can steer the work while an agentic development team can execute in parallel with controlled interfaces. The plan assumes iterative delivery with vertical slices, hard definitions of done and explicit dependency mapping.
+1. Delivery model
+
+[Table 2]
++--------------------+--------------------------------------------------------------+
+| Item               | Decision                                                     |
++--------------------+--------------------------------------------------------------+
+| Framework          | Scrum-compatible agile delivery with 2-week sprints          |
++--------------------+--------------------------------------------------------------+
+| Increment strategy | Vertical slices first; avoid horizontal tech-only milestones |
+|                    |  unless foundational                                         |
++--------------------+--------------------------------------------------------------+
+| Source of truth    | GDD for intent, backlog for execution order, ADRs for        |
+|                    | technical decisions                                          |
++--------------------+--------------------------------------------------------------+
+| Release rhythm     | Internal playable build every sprint; externally hostable    |
+|                    | build at each increment end                                  |
++--------------------+--------------------------------------------------------------+
+| Definition of done | Code + tests + docs + observability + review complete        |
++--------------------+--------------------------------------------------------------+
+
+
+2. Agentic team model
+The recommended operating model uses specialized AI-assisted roles with clear ownership boundaries. Codex can be used as the primary implementation engine, but the project must still have a human product owner who approves scope, architecture and release decisions.
+
+[Table 3]
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Role                              | Primary ownership                                        | Typical outputs                                        |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Product Owner / Creative Director | Vision, scope, priority, acceptance                      | Approved stories, change decisions, milestone sign-off |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| System Architect Agent            | Module boundaries, schemas, contracts                    | ADRs, interface definitions, technical reviews         |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Backend Simulation Agent          | World tick, actions, character state, persistence        | Core services, tests, migration proposals              |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Frontend UI Agent                 | Browser UI, state handling, websocket client             | UI pages, event rendering, accessibility improvements  |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Economy Agent                     | Markets, contracts, metrics, sinks and faucets           | Orderbook logic, dashboards, balance reports           |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| AI Systems Agent                  | Skill discovery, similarity matching, moderation         | AI adapters, validators, review tools                  |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| QA / Security Agent               | Test harnesses, exploit cases, auth and moderation risks | Test suites, threat notes, bug triage                  |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+| Live Ops Agent                    | Deployment scripts, monitoring, backups, runbooks        | Service installers, dashboards, incident docs          |
++-----------------------------------+----------------------------------------------------------+--------------------------------------------------------+
+
+
+3. Working rules for Codex-oriented delivery
+• Every story must have acceptance criteria, technical notes, dependency tags and a clear owner.
+• Agents may work in parallel only when a contract boundary is already defined.
+• Schema and message changes require contract-first review before implementation spreads.
+• Each meaningful change must update tests, docs and at least one observability hook.
+• Never allow AI-generated code to publish direct game balance changes without explicit review.
+• Keep AGENTS.md, ADRs and story templates in-repo so context survives across sessions.
+4. Increment roadmap
+
+[Table 4]
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| Increment                   | Goal                                                       | Playable outcome                                           |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| A - Foundation slice        | Login, websocket shell, world clock, character birth       | Can create life, connect, view location and perform basic  |
+|                             |                                                            | actions                                                    |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| B - Life and labor slice    | Needs, routines, family support, training and work         | Character can live through early phases and earn basic     |
+|                             |                                                            | progress                                                   |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| C - Craft and market slice  | Items, crafting, listings, simple contracts                | Player economy begins to function                          |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| D - Society slice           | Settlements, governance, law and citizenship               | Communities can organize and regulate local play           |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| E - Travel and unlock slice | Planet/plane graph, expeditions, unlock engine             | World expansion becomes visible and collaborative          |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| F - Emergent skill slice    | AI-assisted discovery, moderation and publishing           | New skill canon can grow safely                            |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+| G - Live ops slice          | Backups, admin panel depth, moderation and balance tooling | Host can run the world reliably                            |
++-----------------------------+------------------------------------------------------------+------------------------------------------------------------+
+
+
+Epic 1 - Foundation and repository governance
+Story 1.1 - Create monorepo / workspace foundation
+User story: As a development team, we want a clean repository structure so agents can work predictably.
+• Subtask: Create docs/, server/, client/, tools/, infra/ and tests/ skeletons
+• Subtask: Add formatting, linting and commit conventions
+• Subtask: Create AGENTS.md with role guidance and handoff rules
+• Subtask: Create ADR template and architecture decision folder
+Story 1.2 - Set up CI and quality gates
+User story: As a team, we want automated validation so regressions are caught immediately.
+Dependencies: 1.1
+• Subtask: Build pipeline for server and client
+• Subtask: Run lint, type checks and tests in CI
+• Subtask: Publish artifacts for internal builds
+• Subtask: Block merges when required checks fail
+Story 1.3 - Establish observability baseline
+User story: As operators, we want standard logs and metrics so core failures are diagnosable.
+Dependencies: 1.1
+• Subtask: Standardize structured logging format
+• Subtask: Emit request, websocket and tick metrics
+• Subtask: Create local dashboard starter configuration
+• Subtask: Document log retention and redaction rules
+Epic 2 - Accounts, auth and session model
+Story 2.1 - Account schema and identity flows
+User story: As a player, I want to create and secure an account so my lineage and settings persist.
+Dependencies: 1.1, 1.2
+• Subtask: Design account table and profile schema
+• Subtask: Implement registration, login and session refresh
+• Subtask: Add password reset and email verification stubs
+• Subtask: Log audit events for identity actions
+Story 2.2 - Single-character enforcement
+User story: As the system, I want only one living character per account so the core rule stays intact.
+Dependencies: 2.1
+• Subtask: Add account-character relationship rules
+• Subtask: Block second live character creation
+• Subtask: Create admin override tooling for emergencies
+• Subtask: Add tests for race conditions around death and creation
+Epic 3 - Realtime transport and client shell
+Story 3.1 - WebSocket gateway
+User story: As a player, I want live updates without refreshing so the world feels persistent and alive.
+Dependencies: 2.1, 1.3
+• Subtask: Create websocket endpoint with authenticated handshake
+• Subtask: Define standard message envelope and error format
+• Subtask: Implement heartbeats and disconnect handling
+• Subtask: Document command and event contracts
+Story 3.2 - Browser client shell
+User story: As a player, I want a readable text-first interface so I can navigate the game comfortably.
+Dependencies: 3.1
+• Subtask: Set up routing and app shell
+• Subtask: Build panels for character, location, actions, chat and notifications
+• Subtask: Wire websocket client and reconnect strategy
+• Subtask: Add accessibility checks for keyboard-first navigation
+Epic 4 - World clock and simulation core
+Story 4.1 - World time service
+User story: As the system, I want a stable time model so all actions resolve consistently.
+Dependencies: 1.3
+• Subtask: Implement configurable world clock
+• Subtask: Map real time to in-game time at 1:30 ratio day scale
+• Subtask: Expose time snapshots to clients
+• Subtask: Track drift and lag metrics
+Story 4.2 - Action engine v1
+User story: As a player, I want actions to consume time and produce outcomes so my daily life has structure.
+Dependencies: 4.1
+• Subtask: Create action definitions and action queue per character
+• Subtask: Implement start, cancel, pause and complete states
+• Subtask: Resolve rewards, needs and XP outputs
+• Subtask: Add deterministic tests for action completion edge cases
+Story 4.3 - Offline routine mode
+User story: As a player, I want my character to follow routines while I am offline so the game stays playable.
+Dependencies: 4.2
+• Subtask: Create routine templates and safety defaults
+• Subtask: Limit productivity versus active play
+• Subtask: Handle interruptions such as danger or missing resources
+• Subtask: Expose summary reports on next login
+Epic 5 - Character lifecycle and hidden-potential model
+Story 5.1 - Birth and wheel generation
+User story: As a player, I want a wheel-based creation flow so each life starts with meaningful randomness.
+Dependencies: 2.2, 3.2
+• Subtask: Create wheel configuration schema
+• Subtask: Implement server-authoritative random generation
+• Subtask: Render outcome reveal UI
+• Subtask: Add anti-reroll cost and cooldown rules
+Story 5.2 - Life stages and family protection
+User story: As a new character, I want early life protections so I can enter the world without trivial loss.
+Dependencies: 5.1, 4.2
+• Subtask: Implement age stage state machine
+• Subtask: Create family support controller for feeding and safety
+• Subtask: Restrict dangerous actions by stage
+• Subtask: Add tutorial prompts linked to age progression
+Story 5.3 - Dual stat layer system
+User story: As the simulation, I want visible and hidden stat layers so lives are asymmetrical and deep.
+Dependencies: 5.1, 4.2
+• Subtask: Design current stat schema
+• Subtask: Design hidden potential schema
+• Subtask: Implement growth modifiers, ceilings and affinities
+• Subtask: Create admin/debug inspection tools
+• Subtask: Add telemetry for growth curve analysis
+Story 5.4 - Passive hidden traits and luck model
+User story: As a player, I want my life to feel uniquely fortunate or unfortunate without everything being obvious.
+Dependencies: 5.3
+• Subtask: Define hidden passive taxonomy
+• Subtask: Implement luck, doom and scenario weighting
+• Subtask: Create indirect player-facing signals and narrative hints
+• Subtask: Add balance dashboards for hidden trait impact
+Epic 6 - Progression and skill systems
+Story 6.1 - XP and scaling curves
+User story: As a system designer, I want progressive XP scaling so high capability remains rare and meaningful.
+Dependencies: 5.3
+• Subtask: Implement progressive XP formulas
+• Subtask: Add range interpretations and soft caps
+• Subtask: Support domain-specific modifiers
+• Subtask: Create simulation scripts for balance tuning
+Story 6.2 - Skill taxonomy and skill tree UI
+User story: As a player, I want to see my skill landscape so I can plan my life direction.
+Dependencies: 6.1, 3.2
+• Subtask: Design root categories and child relationships
+• Subtask: Create skill storage schema
+• Subtask: Build skill tree and search UI
+• Subtask: Show visible versus hidden hints appropriately
+Story 6.3 - AI-assisted emergent skill pipeline
+User story: As the world, I want rare new skills to emerge safely so the game can evolve over time.
+Dependencies: 6.2, 4.2, 11.2
+• Subtask: Emit action fingerprints
+• Subtask: Build similarity matching against existing skills
+• Subtask: Create gated AI proposal adapter
+• Subtask: Validate proposals against naming and power budgets
+• Subtask: Add moderation review queue and publish flow
+Epic 7 - Needs, health and life-sim loops
+Story 7.1 - Needs system
+User story: As a player, I want hunger, sleep and stress to matter so routine choices become meaningful.
+Dependencies: 4.2, 5.2
+• Subtask: Implement nutrition, fatigue, hygiene, morale and belonging values
+• Subtask: Apply modifiers to action outcomes and recovery
+• Subtask: Create warnings and summary displays
+• Subtask: Add decay and recovery tests
+Story 7.2 - Health, injury and recovery
+User story: As a player, I want wounds and illness to create consequences beyond hit points.
+Dependencies: 7.1
+• Subtask: Create health condition framework
+• Subtask: Support injuries, diseases and long recovery arcs
+• Subtask: Link treatment to professions and items
+• Subtask: Ensure early-life safety exceptions are respected
+Epic 8 - Items, crafting and production
+Story 8.1 - Item type-variant-instance model
+User story: As the system, I want deterministic item identities so markets and storage remain manageable.
+Dependencies: 1.1
+• Subtask: Define type, variant and instance schemas
+• Subtask: Canonicalize variant hashing rules
+• Subtask: Separate durability and provenance onto instance state
+• Subtask: Create migration and test fixtures
+Story 8.2 - Recipe and crafting engine
+User story: As a crafter, I want to produce useful items so non-combat progression is real.
+Dependencies: 8.1, 4.2, 6.1
+• Subtask: Create recipe DSL / data format
+• Subtask: Implement resource inputs, timing and outputs
+• Subtask: Apply quality variance from stats and skills
+• Subtask: Add crafting logs and failure states
+Story 8.3 - Workshops and production spaces
+User story: As a settlement member, I want buildings and workstations to shape production efficiency.
+Dependencies: 8.2, 10.1
+• Subtask: Create building dependency model
+• Subtask: Link station quality to recipes and throughput
+• Subtask: Restrict advanced outputs behind infrastructure
+• Subtask: Expose workshop ownership and access permissions
+Epic 9 - Markets, trade and contracts
+Story 9.1 - Market listings and orderbook
+User story: As a trader, I want to buy and sell goods through reliable systems.
+Dependencies: 8.1, 8.2, 3.2
+• Subtask: Implement listings, buy orders and fulfillment
+• Subtask: Add fees and anti-spam limits
+• Subtask: Store price history and volume metrics
+• Subtask: Create market UI pages
+Story 9.2 - Contracts
+User story: As a player, I want labor and delivery contracts so services can be monetized.
+Dependencies: 9.1
+• Subtask: Support work, delivery and construction contract types
+• Subtask: Track obligations and completion
+• Subtask: Allow escrow-like payment holding
+• Subtask: Add breach and dispute hooks
+Story 9.3 - Economy dashboards
+User story: As a host, I want market and sink/faucet dashboards so the economy can be monitored.
+Dependencies: 9.1, 12.1
+• Subtask: Create metrics aggregation jobs
+• Subtask: Build admin pages for price indices and top goods
+• Subtask: Alert on shortages, inflation spikes and dead markets
+• Subtask: Export reports for balance review
+Epic 10 - Settlements, nations and law
+Story 10.1 - Settlement project system
+User story: As a community, I want to build shared infrastructure so locations can evolve.
+Dependencies: 8.2, 9.2
+• Subtask: Create project definitions and milestone tracking
+• Subtask: Allow contribution of materials and labor
+• Subtask: Support housing, workshops, governance and defense projects
+• Subtask: Display public progress and required inputs
+Story 10.2 - Citizenship and roles
+User story: As a government, I want formal membership and office systems so institutions can exist.
+Dependencies: 10.1
+• Subtask: Create settlement and nation membership models
+• Subtask: Define roles and permissions
+• Subtask: Support applications, appointments and removals
+• Subtask: Expose civic status in UI
+Story 10.3 - Law and enforcement
+User story: As a server, I want grief-resistant law mechanics so permadeath remains viable.
+Dependencies: 10.2, 14.1
+• Subtask: Create law configuration model
+• Subtask: Implement crime flags, wanted states and penalties
+• Subtask: Support bounty hooks and restricted safe zones
+• Subtask: Ensure age protections override hostile access where required
+Epic 11 - World graph, travel and unlocks
+Story 11.1 - Universe / planet / plane graph
+User story: As a player, I want the world to have distinct places and travel routes.
+Dependencies: 1.1, 3.2
+• Subtask: Create world graph schema
+• Subtask: Define environmental tags and travel costs
+• Subtask: Render route and destination UI
+• Subtask: Support future expansion without schema rewrite
+Story 11.2 - Unlock engine
+User story: As the world, I want new areas and capabilities to unlock when players meet milestones.
+Dependencies: 11.1, 10.1, 6.2
+• Subtask: Create milestone rule definitions
+• Subtask: Support research, expedition, infrastructure and political prerequisites
+• Subtask: Broadcast public progress
+• Subtask: Allow admin emergency overrides without manual DB edits
+Story 11.3 - Travel actions and risks
+User story: As a player, I want travel to matter economically and narratively.
+Dependencies: 11.1, 4.2
+• Subtask: Implement route selection and timed travel
+• Subtask: Add cargo and escort considerations
+• Subtask: Support interruptions and hazards
+• Subtask: Summarize trip outcomes in reports
+Epic 12 - Admin, moderation and operations
+Story 12.1 - Admin panel skeleton
+User story: As a host, I want a browser management panel so I can run the game from one application.
+Dependencies: 2.1, 1.3
+• Subtask: Create authenticated admin area with RBAC
+• Subtask: Add dashboard home page
+• Subtask: Expose service status, logs and maintenance mode
+• Subtask: Secure with strict session and access controls
+Story 12.2 - Moderation tooling
+User story: As a moderator, I want report queues and sanction tools so community harm can be managed.
+Dependencies: 12.1
+• Subtask: Add player report intake
+• Subtask: Create moderation case workflow
+• Subtask: Support warning, mute, ban and note actions
+• Subtask: Log all moderation changes in audit trail
+Story 12.3 - Backups, restore and deployment controls
+User story: As a host, I want operational safeguards so I can recover from mistakes or failures.
+Dependencies: 12.1
+• Subtask: Create backup jobs and retention policy
+• Subtask: Implement restore dry-run tooling
+• Subtask: Add deployment version display and migration checks
+• Subtask: Document incident response runbook
+Epic 13 - Testing, balance and hardening
+Story 13.1 - Test strategy implementation
+User story: As a team, I want layered tests so the simulation remains stable as it grows.
+Dependencies: All foundational epics
+• Subtask: Unit tests for formulas and rules
+• Subtask: Integration tests for auth, actions, market and persistence
+• Subtask: Contract tests for websocket messages
+• Subtask: Scenario tests for death, inheritance and law
+Story 13.2 - Balance simulation harness
+User story: As a designer, I want synthetic simulations so I can inspect growth and economic stability before live release.
+Dependencies: 6.1, 9.3, 11.2
+• Subtask: Create parameterized simulation scripts
+• Subtask: Model profession earnings and time costs
+• Subtask: Inspect progression curves against hidden potential ranges
+• Subtask: Generate reports for review meetings
+Story 13.3 - Security and exploit review
+User story: As a host, I want security gates so abuse is harder and more visible.
+Dependencies: 12.1, 13.1
+• Subtask: Review auth and authorization
+• Subtask: Add rate limiting and anti-automation defenses
+• Subtask: Create suspicious behavior detectors
+• Subtask: Write exploit test checklist for every release
+
+5. Story template for agentic execution
+
+[Table 5]
++----------------------+------------------------------------------------------+
+| Field                | Required content                                     |
++----------------------+------------------------------------------------------+
+| Problem / intent     | What player or system problem is being solved        |
++----------------------+------------------------------------------------------+
+| Acceptance criteria  | Observable conditions for completion                 |
++----------------------+------------------------------------------------------+
+| Dependencies         | Story IDs or contracts that must exist first         |
++----------------------+------------------------------------------------------+
+| Implementation notes | Schemas, endpoints, files, architectural constraints |
++----------------------+------------------------------------------------------+
+| Test notes           | Required unit, integration and scenario tests        |
++----------------------+------------------------------------------------------+
+| Observability        | Logs, metrics or dashboards to update                |
++----------------------+------------------------------------------------------+
+| Review owner         | Human or lead agent who must approve merge           |
++----------------------+------------------------------------------------------+
+
+
+6. Definition of done
+• Feature behavior matches accepted story scope.
+• Required tests are present and passing.
+• Docs, contracts and ADR references are updated.
+• Logs, metrics and moderation implications are considered.
+• No unchecked TODOs remain in merged code.
+• A human reviewer has verified that AI-generated output is appropriate.
+7. Recommended repo documents
+• docs/GDD.md - design ground truth
+• docs/BACKLOG.md - current epics and story status
+• docs/AGENTS.md - instructions, repo map, agent roles and handoff conventions
+• docs/ADR/ - architecture decisions
+• docs/RUNBOOKS/ - operational and incident procedures
+• docs/BALANCE/ - economic and progression tuning notes
+8. Suggested sprint sequence
+
+[Table 6]
++--------+------------------------------------+----------------------------------------------------+
+| Sprint | Focus                              | Expected demo                                      |
++--------+------------------------------------+----------------------------------------------------+
+| 1      | Repo, auth, websocket shell        | Can log in and connect to live session             |
++--------+------------------------------------+----------------------------------------------------+
+| 2      | World clock, actions, birth wheels | Can create life and perform basic action loop      |
++--------+------------------------------------+----------------------------------------------------+
+| 3      | Life stages, routines, needs       | Character survives daily cycle and offline routine |
++--------+------------------------------------+----------------------------------------------------+
+| 4      | Items, recipes, crafting           | Can produce and store basic goods                  |
++--------+------------------------------------+----------------------------------------------------+
+| 5      | Markets and contracts              | Can sell, buy and accept service agreements        |
++--------+------------------------------------+----------------------------------------------------+
+| 6      | Settlements and law                | Can build local projects and apply rules           |
++--------+------------------------------------+----------------------------------------------------+
+| 7      | Travel and unlocks                 | Can move between worlds and push public milestones |
++--------+------------------------------------+----------------------------------------------------+
+| 8      | AI skill discovery                 | Can review and publish safe emergent skills        |
++--------+------------------------------------+----------------------------------------------------+
+
+
+9. Final delivery guidance
+Do not attempt to build the entire MMO horizontally before a vertical slice exists. The first meaningful milestone is not 'database complete' or 'all systems stubbed'; it is a tiny but runnable world where one account can create one life, spend time, produce state changes and survive through a short simulated routine. Every later epic should protect that vertical path instead of burying it.

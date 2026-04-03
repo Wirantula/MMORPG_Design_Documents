@@ -1,0 +1,4 @@
+name: CybaWorld Daily Loop
+command: git --no-pager status -sb; docker compose -f infra/compose/docker-compose.yml ps; npm run lint; npm run typecheck
+tags: [cybaworld, daily, operations]
+description: Quick daily readiness loop for branch status, infra status, and static quality checks.

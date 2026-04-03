@@ -1,0 +1,4 @@
+name: CybaWorld Dev Server
+command: npm run dev:server
+tags: [cybaworld, backend, dev]
+description: Start the backend development server.

@@ -1,0 +1,23 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: cybaworld-prometheus
+    restart: unless-stopped
+    ports:
+      - '${PROMETHEUS_PORT:-9090}:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: cybaworld-grafana
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    ports:
+      - '${GRAFANA_PORT:-3002}:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  grafana_data:

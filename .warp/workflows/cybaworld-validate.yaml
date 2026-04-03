@@ -1,0 +1,4 @@
+name: CybaWorld Validate
+command: npm run validate
+tags: [cybaworld, quality, ci]
+description: Run lint, typecheck, and tests across workspaces.

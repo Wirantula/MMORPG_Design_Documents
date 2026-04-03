@@ -1,0 +1,417 @@
+Game Design Document
+Browser-based fantasy/scifi life-sim MMORPG • single character per account • permadeath • real-time world
+
+[Table 1]
++--------------+--------------------------------------------------------------+
+| Project      | Browser-based fantasy/scifi life-sim MMORPG                  |
++--------------+--------------------------------------------------------------+
+| Document Set | Ground-truth design + agile/agentic execution pack           |
++--------------+--------------------------------------------------------------+
+| Purpose      | Reference document for design, implementation, live ops and  |
+|              | AI-assisted delivery                                         |
++--------------+--------------------------------------------------------------+
+| Version      | v1.0 concept foundation                                      |
++--------------+--------------------------------------------------------------+
+
+
+How to use this document
+This document is intended to serve as the ground-truth reference for creative, technical and production decisions. Where future design discussions conflict with this document, the assumption is that this document wins until it is formally revised. The design philosophy prioritizes persistence, asymmetry, player-created history and meaningful lives over convenience, instant power and perfectly fair starts.
+• The world is always running. One real-life day equals thirty in-game days.
+• A player may control only one living character at a time.
+• Death is permanent. What survives is legacy, not the body.
+• Combat is important, but not the only route to power or influence.
+• The economy should be as player-driven as possible, with NPCs kept to minimal bootstrap functions.
+• Visible performance and hidden potential are deliberately separate systems.
+1. Product vision
+The game is a browser-run text/UI MMORPG set across multiple universes, planets and planes. It combines fantasy and science-fiction into a society simulator where a player does not simply spawn as a combat-ready hero; instead, each life begins as an infant born into a family that exists inside a persistent social and economic world. The intended fantasy is not just 'be powerful' but 'live a significant life in a world that remembers'.
+The world must support multiple equally legitimate identities: soldier, crafter, merchant, researcher, inventor, governor, physician, smuggler, explorer, scholar, engineer, diplomat and more. A player should be able to become economically critical, politically dangerous or culturally legendary without ever being the strongest fighter on the server.
+2. Design pillars
+
+[Table 2]
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Pillar                     | Meaning                                                  | Design implication                                           |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Persistent life simulation | Characters live through time, needs, family, work and    | Systems must function meaningfully online and offline        |
+|                            | reputation                                               | through routines                                             |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Single-life gravity        | One living character per account and real consequences   | Risk must be meaningful; grief prevention and legacy systems |
+|                            |                                                          |  are mandatory                                               |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Asymmetric people          | Lives are not equally gifted or equally cursed           | Hidden potential, passive traits and scenario bias drive     |
+|                            |                                                          | unique biographies                                           |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Player-driven society      | Markets, institutions and history come from players      | NPCs must bootstrap, not dominate, the economy or politics   |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Multi-path progression     | Combat is one route among many                           | Crafting, trade, invention, research and governance must     |
+|                            |                                                          | unlock real power                                            |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+| Emergent content           | Skills, events and world unlocks can expand through play | AI-assisted systems must be controlled, audited and budgeted |
++----------------------------+----------------------------------------------------------+--------------------------------------------------------------+
+
+
+3. Core fantasy and player experience
+• Be born into a world instead of spawning outside of it.
+• Grow through childhood, apprenticeship and adulthood with choices that matter.
+• Build value through labor, knowledge, trade, craft, war, politics or discovery.
+• Risk permanent death, but leave behind inheritance, institutions, records and bloodlines.
+• Participate in a world where cities, nations and newly opened planets exist because players made them possible.
+• Discover that not every life is fair: some characters are blessed, some cursed, and most are complicated.
+4. Time model and life phases
+The game is real time. The simulation runs continuously even when players are offline. The baseline ratio is fixed at one real day to thirty in-game days. This makes a single in-game day equal to roughly forty-eight real-life minutes.
+
+[Table 3]
++------------------------+------------------------------------------------------------+
+| Layer                  | Rule                                                       |
++------------------------+------------------------------------------------------------+
+| World time             | Always advancing on the server                             |
++------------------------+------------------------------------------------------------+
+| Conversion             | 1 real day = 30 in-game days                               |
++------------------------+------------------------------------------------------------+
+| In-game day length     | ~48 real minutes                                           |
++------------------------+------------------------------------------------------------+
+| Suggested in-game year | 60 in-game days for gameplay practicality                  |
++------------------------+------------------------------------------------------------+
+| Aging                  | Life stage rules modify permitted actions and growth rates |
++------------------------+------------------------------------------------------------+
+
+
+Life stages
+
+[Table 4]
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Stage  | Example range | Gameplay purpose                                  | Key protections / limits                                 |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Infant | 0-2 years     | Attachment, observation, family introduction      | No open danger; family and settlement protection         |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Child  | 3-9 years     | Basic learning, chores, social shaping            | Restricted travel, safe task lists, tutorialized systems |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Teen   | 10-14 years   | Apprenticeship, specialization hints, early labor | Limited contracts, guardian-linked travel                |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Adult  | 15-45 years   | Full systems access and highest productive agency | No core restrictions besides law and capability          |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+| Elder  | 46+           | Mentorship, governance, knowledge transfer        | Physical decline offset by social and intellectual       |
+|        |               |                                                   | advantages                                               |
++--------+---------------+---------------------------------------------------+----------------------------------------------------------+
+
+
+5. Character generation
+New lives are generated through a wheel-based creation ritual. The wheel is not a cosmetic mini-game; it is the account-facing interface for accepting randomness and living with its consequences. Players may influence when to create a life, but not force a perfect outcome.
+• Race wheel: selects a fantasy/scifi hybrid race archetype or origin cluster.
+• Aptitude wheel: biases a life toward broad directions such as physicality, creativity, sociality, resilience or curiosity.
+• Trait wheel: applies temperament and behavior modifiers.
+• Origin wheel: determines starting culture, family context, language exposure and geography.
+• Optional omen wheel: rare source of hidden blessings, curses or story bias.
+6. Dual stat architecture
+Every character has two stat layers. The visible layer represents current measurable capability. The invisible layer represents hidden growth potential, affinity, scenario weighting and soft or hard ceilings. The design goal is to make characters meaningfully unequal without turning the system into a black box that feels arbitrary.
+
+[Table 5]
++---------------------------+------------------------+--------------------------------------------------------------+
+| Layer                     | Visible to player      | Function                                                     |
++---------------------------+------------------------+--------------------------------------------------------------+
+| Visible current stats     | Mostly yes             | Determine present effectiveness in combat, labor, crafting,  |
+|                           |                        | trade and social actions                                     |
++---------------------------+------------------------+--------------------------------------------------------------+
+| Invisible potential stats | No, or only indirectly | Determine learning efficiency, breakthrough odds, growth     |
+|                           |                        | ceilings, passive bias and life outcomes                     |
++---------------------------+------------------------+--------------------------------------------------------------+
+| Passive hidden traits     | Usually no             | Bias events, luck, danger, relationships, invention and rare |
+|                           |                        |  scenarios                                                   |
++---------------------------+------------------------+--------------------------------------------------------------+
+
+
+Visible stat families
+
+[Table 6]
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Family               | Examples                                 | Used by                                                 |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Physical             | Strength, Agility, Endurance, Recovery   | Combat, travel, labor, hauling, survival                |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Mental               | Intelligence, Focus, Creativity, Memory  | Research, invention, planning, quality consistency      |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Social               | Charisma, Authority, Empathy, Deception  | Trade, diplomacy, recruitment, governance               |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Perceptual           | Awareness, Precision, Insight            | Tracking, ranged actions, diagnosis, reading situations |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Spiritual / exotic   | Willpower, Resonance, Aether sensitivity | Magic-tech interactions, planar phenomena, rituals      |
++----------------------+------------------------------------------+---------------------------------------------------------+
+| Economic / practical | Appraisal, Negotiation, Logistics        | Markets, contracts, supply chains, sales                |
++----------------------+------------------------------------------+---------------------------------------------------------+
+
+
+Hidden stat families
+
+[Table 7]
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Hidden value          | Meaning                                             | Player-facing signal                                    |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Growth elasticity     | How efficiently XP turns into progress              | Learns unusually fast or slowly in repeated actions     |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Ceiling bias          | How far a stat or skill can realistically go        | Long-term plateau or late breakthrough behavior         |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Fortune bias          | Good or bad scenario drift                          | Noticeably lucky or unlucky life events                 |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Craft intuition       | Natural sensitivity to material and process quality | Better-than-expected output variance                    |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Combat instinct       | Timing, danger reading, poise under pressure        | Occasional clutch survival or unusually poor decisions  |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Research spark        | Pattern discovery and novel insight chance          | Breakthrough moments in study and experimentation       |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+| Trauma susceptibility | How badly failure, stress or injury damages growth  | Personality shifts, morale crashes, long recovery tails |
++-----------------------+-----------------------------------------------------+---------------------------------------------------------+
+
+
+7. Stat and skill scale
+All stats and skills range from 0 to 1,000,000. This range exists to support mythical and civilization-shaping extremes, but the interpretation is intentionally non-linear. Level 100 in any stat or skill represents peak human capability. Everything above 100 is superhuman. The curve between 100 and 500 must already feel terrifying.
+
+[Table 8]
++-------------------+------------------------------------------+
+| Range             | Interpretation                           |
++-------------------+------------------------------------------+
+| 0-10              | Severely limited or untrained            |
++-------------------+------------------------------------------+
+| 10-50             | Weak to competent human                  |
++-------------------+------------------------------------------+
+| 50-100            | Strong human to peak human               |
++-------------------+------------------------------------------+
+| 100-250           | Clearly superhuman                       |
++-------------------+------------------------------------------+
+| 250-500           | Extremely dangerous / exceptional        |
++-------------------+------------------------------------------+
+| 500-1,000         | Local legend or monstrous force          |
++-------------------+------------------------------------------+
+| 1,000-10,000      | Region-shaping capability                |
++-------------------+------------------------------------------+
+| 10,000-100,000    | World-class or nation-scale significance |
++-------------------+------------------------------------------+
+| 100,000-1,000,000 | Mythic, plane-scale or history-defining  |
++-------------------+------------------------------------------+
+
+
+Progression rules
+• XP requirements rise progressively rather than linearly.
+• Hidden potential changes efficiency and ceiling, not the existence of XP costs.
+• Higher tiers use diminishing returns, plateaus, breakthroughs and domain-specific resistance curves.
+• The majority of characters should never exceed 100 in most stats; this is deliberate.
+• 1000+ capability must remain extremely rare and world-noticeable.
+8. Skills: active, passive and emergent
+Skills are divided into active and passive categories. Active skills directly affect a player action. Passive skills alter the probability field around the player, their output quality, their timing or their scenario exposure.
+
+[Table 9]
++------------------------+---------------------------------------------------------+----------------------------------------------------+
+| Type                   | Examples                                                | Gameplay effect                                    |
++------------------------+---------------------------------------------------------+----------------------------------------------------+
+| Active skills          | Swordsmanship, Carpentry, Negotiation, Surgery, Portal  | Directly improve action outcomes                   |
+|                        | Tuning                                                  |                                                    |
++------------------------+---------------------------------------------------------+----------------------------------------------------+
+| Passive visible skills | Merchant's Eye, Survivor's Pace                         | May show as named talents with broad modifiers     |
++------------------------+---------------------------------------------------------+----------------------------------------------------+
+| Passive hidden skills  | Fortune Drift, Catastrophe Avoidance, Research Spark    | Bias rare events, variance, encounters and hidden  |
+|                        |                                                         | opportunity                                        |
++------------------------+---------------------------------------------------------+----------------------------------------------------+
+
+
+AI-assisted skill discovery
+New skills may emerge when repeated action fingerprints fail to map cleanly to existing skill definitions. This is not a free-form text generator. It is a tightly bounded discovery pipeline with similarity checks, rate limits, effect templates, moderation and publishing rules.
+• Each action emits a deterministic fingerprint: verb, domain, tool, output class, context and resource profile.
+• A similarity layer checks whether a sufficiently close skill already exists.
+• Only if the action pattern is repeated, meaningful and rare-gate eligible does the system ask the AI layer for a candidate skill concept.
+• The AI may propose name, parent skill, description and allowed effect template, but cannot invent arbitrary rules outside design budgets.
+• New skills enter a moderation and validation path before becoming part of global canon.
+9. Core gameplay domains
+Combat
+Combat is lethal, reputationally expensive and politically meaningful. It should be one route to power, not the universal best route. Open hostility is constrained by law, geography, age protections and consequences.
+Crafting
+Crafting is primary economic production. Items, structures, tools, consumables and specialty components should overwhelmingly come from player labor and supply chains.
+Sales and trade
+Trading should reward market reading, route planning, negotiation, risk pricing and reputation. A brilliant merchant must be able to become more influential than a mediocre fighter.
+Invention
+Invention covers novel processes, prototypes, engineering solutions and high-risk experimentation. It sits between crafting and research and feeds unlock systems.
+Research
+Research uncovers formulas, world secrets, technologies, magical sciences, biological insights and unlock conditions. It is a macro-system driver.
+Governance
+Governance allows players to found settlements, write rules, tax activity, maintain safety and project power.
+Exploration and logistics
+Travel, mapping, surveying, shipping and route support create the infrastructure that makes the multiverse usable.
+10. Needs, mood and daily life
+The life-sim layer exists to make time, place and routine matter. Needs are not busywork; they alter productivity, risk, social quality and survival.
+
+[Table 10]
++----------------------------+-----------------------------------------------------+
+| Need                       | Effect of neglect                                   |
++----------------------------+-----------------------------------------------------+
+| Nutrition                  | Lower recovery, labor output and mental consistency |
++----------------------------+-----------------------------------------------------+
+| Sleep                      | Focus loss, slower learning, poor combat timing     |
++----------------------------+-----------------------------------------------------+
+| Hygiene / health           | Disease risk, social penalties, long-term weakness  |
++----------------------------+-----------------------------------------------------+
+| Stress / morale            | Breakdowns, bad choices, volatility in outcomes     |
++----------------------------+-----------------------------------------------------+
+| Belonging / social contact | Isolation penalties, trust decay, vulnerability     |
++----------------------------+-----------------------------------------------------+
+
+
+11. Player-driven economy
+The economy should be as player-driven as possible. NPCs may seed initial conditions, but long-term production, distribution, specialization, price discovery and institutional power should emerge from players. The game should be designed around production chains, market memory, destruction and maintenance costs, contract trust and local scarcity.
+Economic rules
+• Use very few permanent NPC merchants; prefer registries, exchanges and legal institutions over personified sellers.
+• Maintain strong sinks: upkeep, wear, fees, tariffs, fines, perishability and death loss.
+• Track price history, velocity, listing depth, destruction value and strategic shortages.
+• Allow specialized professions to thrive on services as well as goods.
+• Prevent single-system dominance by making transport, distance, politics and law matter.
+Contracts and market systems
+• Listing-based markets for goods and components
+• Work contracts for labor and services
+• Construction contracts linked to milestones
+• Insurance-style agreements for risky transport, expeditions and high-value assets
+• Government fees, tax systems and legal seizure mechanics
+12. World structure and unlock flow
+The world is organized as universes containing planets and planes. Each world node can have different environmental logic, technological compatibility, magical saturation, hazards and available resources. A new server should not begin fully opened. Instead, players progressively unlock major spaces through social, economic and technological milestones.
+
+[Table 11]
++----------------+-----------------------------------------+-------------------------------------------------+
+| Layer          | Contents                                | Unlock examples                                 |
++----------------+-----------------------------------------+-------------------------------------------------+
+| Universe       | Shard-scale grouping of worlds          | Special rule-set or seasonal experiment         |
++----------------+-----------------------------------------+-------------------------------------------------+
+| Planet / plane | Biomes, resources, settlements, dangers | Expeditions, portal stabilization, shipbuilding |
++----------------+-----------------------------------------+-------------------------------------------------+
+| Nation         | Law, citizenship, taxation, protection  | Population, economy volume, charter conditions  |
++----------------+-----------------------------------------+-------------------------------------------------+
+| Settlement     | Housing, workshops, governance hubs     | Resource investment and workforce projects      |
++----------------+-----------------------------------------+-------------------------------------------------+
+
+
+13. Social systems and institutions
+Because NPC presence is intentionally low, much of society must be represented through player-run institutions and system-enforced registries rather than quest-giving characters.
+• Family and lineage systems
+• Citizenship and residency
+• Titles, offices and elected or appointed roles
+• Crime records and bounty systems
+• Formalized property, inheritance and succession
+• Mentorship, apprenticeship and educational institutions
+14. Permadeath, legacy and grief prevention
+Permadeath is central and must feel serious. However, serious does not mean cheap or random. The game must aggressively prevent trivial griefing, irreversible tutorial-stage loss and exploit-driven deletion of player time.
+
+[Table 12]
++----------------------------+---------------------------------------------------------+
+| Problem                    | Design response                                         |
++----------------------------+---------------------------------------------------------+
+| Early-life vulnerability   | Hard protections in infant and child stages             |
++----------------------------+---------------------------------------------------------+
+| Offline murder frustration | Routine mode, safe lodging, law enforcement, travel     |
+|                            | constraints                                             |
++----------------------------+---------------------------------------------------------+
+| Total loss discouragement  | Legacy systems, inheritance, records, institutions and  |
+|                            | family continuity                                       |
++----------------------------+---------------------------------------------------------+
+| Combat dominance           | Legal consequences, cost, recovery burden, social       |
+|                            | retaliation, non-combat parity                          |
++----------------------------+---------------------------------------------------------+
+
+
+15. Item identity model
+Items use a type-variant-instance model. Exact same name plus game-relevant stat profile maps to the same Variant ID. Items that differ slightly receive a different Variant ID. Individual crafted copies then exist as separate instances with durability, ownership history, inscriptions and cosmetic seeds.
+
+[Table 13]
++------------------+-----------------------------------------------------------+
+| Layer            | Purpose                                                   |
++------------------+-----------------------------------------------------------+
+| Item Type ID     | Conceptual class such as Iron Sword or Field Microscope   |
++------------------+-----------------------------------------------------------+
+| Item Variant ID  | Exact meaningful stat profile and name combination        |
++------------------+-----------------------------------------------------------+
+| Item Instance ID | Unique physical object with state, history and durability |
++------------------+-----------------------------------------------------------+
+
+
+16. Technical architecture direction
+The game should run as a server-authoritative web application with a text/UI browser client. The server owns truth for time, character state, economy, world events, combat resolution and persistence. The browser client submits intent and receives authoritative results.
+• Realtime transport: WebSockets for event-driven updates and commands.
+• Core runtime: persistent world simulation loop with deterministic tick processing where practical.
+• Storage: transactional primary database plus append-only audit/event logging.
+• Background workers: economy metrics, AI skill moderation, report generation, scheduled world events.
+• Deployment target: self-hosted Windows system, ideally launched as a service-backed application with web management panel.
+17. Admin and management panel
+The management application should let the host observe and steer the game without replacing player agency. It exists for health, moderation, data integrity, content publishing and emergency controls.
+
+[Table 14]
++------------------+-----------------------------------------------------------+
+| Panel area       | Primary capabilities                                      |
++------------------+-----------------------------------------------------------+
+| Operations       | Server state, tick lag, connected sessions, maintenance   |
+|                  | mode, restart controls                                    |
++------------------+-----------------------------------------------------------+
+| Moderation       | Reports, sanctions, chat review, exploit flags            |
++------------------+-----------------------------------------------------------+
+| Economy          | Price indices, sink/faucet metrics, top trades, shortage  |
+|                  | alerts                                                    |
++------------------+-----------------------------------------------------------+
+| World tools      | Event toggles, unlock overrides, spawn and config         |
+|                  | diagnostics                                               |
++------------------+-----------------------------------------------------------+
+| AI review        | Pending skill proposals, merge/reject/approve workflow    |
++------------------+-----------------------------------------------------------+
+| Backups and data | Snapshot creation, restore points, migration status       |
++------------------+-----------------------------------------------------------+
+
+
+18. Content balancing rules
+• Combat cannot be the default best answer to money, politics, research or social power.
+• High stats must feel narratively and mechanically correct for their magnitude.
+• Passive luck or doom bias must influence probability, not guarantee outcomes.
+• No system should reward twenty-four-hour online presence as the only way to matter.
+• A weak but brilliant merchant, scholar or inventor should be able to change the world.
+• A powerful fighter without logistics, allies, law or resources should still be constrained.
+19. Open design risks
+
+[Table 15]
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| Risk                    | Why it matters                                        | Mitigation direction                                        |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| Permadeath churn        | Losing lives can cause quit behavior                  | Strong early protections, legacy value, meaningful social   |
+|                         |                                                       | continuity                                                  |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| Economy stagnation      | Too few sinks or too much local abundance break trade | Upkeep, degradation, distance, law and regional             |
+|                         |                                                       | specializations                                             |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| AI skill inflation      | Too many micro-skills reduce clarity                  | Similarity thresholds, moderation queue, power budgets      |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| Hidden stat frustration | Players may feel cheated by unseen limits             | Indirect signaling, discovery tools, narrative feedback     |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+| Content lock fatigue    | World gated too hard feels empty                      | Visible roadmap, staged unlock cadence, shared public goals |
++-------------------------+-------------------------------------------------------+-------------------------------------------------------------+
+
+
+20. Definition of success
+• Players create stories about lives, families, disasters, fortunes and institutions rather than only about combat encounters.
+• Multiple professions remain economically valid months after server start.
+• Settlements and nations emerge with distinct identities, laws and trade roles.
+• Character inequality produces memorable biographies without feeling random or unreadable.
+• The host can run and moderate the game from a manageable self-hosted control panel.
+• The design remains extensible enough for a multi-agent engineering workflow.
+
+Appendix A - Quick-reference rules
+
+[Table 16]
++--------------+-------------------------------------------------------+
+| Topic        | Rule                                                  |
++--------------+-------------------------------------------------------+
+| Accounts     | One active living character per account               |
++--------------+-------------------------------------------------------+
+| Death        | Permanent; only legacy survives                       |
++--------------+-------------------------------------------------------+
+| Time         | 1 real day = 30 in-game days                          |
++--------------+-------------------------------------------------------+
+| Stats        | 0-1,000,000; 100 = peak human                         |
++--------------+-------------------------------------------------------+
+| Progression  | XP difficulty rises progressively                     |
++--------------+-------------------------------------------------------+
+| Hidden layer | Controls growth, ceilings, scenario bias and passive  |
+|              | tendencies                                            |
++--------------+-------------------------------------------------------+
+| Economy      | Player-driven by default, NPC role minimized          |
++--------------+-------------------------------------------------------+
+| Hosting      | Self-hostable on Windows with browser admin panel     |
++--------------+-------------------------------------------------------+

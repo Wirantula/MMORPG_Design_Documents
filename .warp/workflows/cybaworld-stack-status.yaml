@@ -1,0 +1,4 @@
+name: CybaWorld Stack Status
+command: docker compose -f infra/compose/docker-compose.yml ps
+tags: [cybaworld, infra, docker]
+description: Show status of local infrastructure containers.

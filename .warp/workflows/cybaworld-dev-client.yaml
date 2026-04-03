@@ -1,0 +1,4 @@
+name: CybaWorld Dev Client
+command: npm run dev:client
+tags: [cybaworld, frontend, dev]
+description: Start the frontend development server.

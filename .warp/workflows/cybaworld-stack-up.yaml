@@ -1,0 +1,4 @@
+name: CybaWorld Stack Up
+command: docker compose -f infra/compose/docker-compose.yml up -d
+tags: [cybaworld, infra, docker]
+description: Start the local PostgreSQL and Redis stack for development.

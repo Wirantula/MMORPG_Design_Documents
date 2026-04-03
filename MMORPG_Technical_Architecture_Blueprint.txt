@@ -1,0 +1,406 @@
+
+TECHNICAL ARCHITECTURE
+BLUEPRINT
+Browser-Based Fantasy/Sci-Fi Text/UI MMORPG
+Self-hosted Windows deployment • agent-friendly architecture • real-time simulation • permadeath • player-driven world
+
+[Table 1]
++------------------+--------------------------------------------------------------+
+| Document purpose | Ground-truth technical blueprint for implementation and      |
+|                  | operations                                                   |
++------------------+--------------------------------------------------------------+
+| Primary audience | Founder, technical leads, AI agents, backend/frontend/devops |
+|                  |  contributors                                                |
++------------------+--------------------------------------------------------------+
+| Status           | Initial architecture baseline                                |
++------------------+--------------------------------------------------------------+
+| Hosting target   | Dedicated Windows host with public domain and open ports     |
++------------------+--------------------------------------------------------------+
+| Version date     | 02 April 2026                                                |
++------------------+--------------------------------------------------------------+
+
+
+[Table 2]
++--------------------------------------------------------------+
+| This blueprint proposes a modular monolith first,            |
+| service-ready later architecture. The game runs a persistent |
+|  accelerated world clock, supports one living character per  |
+| player, stores dual stat layers, enables event- and          |
+| action-driven progression, and keeps economy and content     |
+| data authoritative on the server. AI-assisted skill          |
+| generation is isolated behind a controlled review pipeline   |
+| so new skills can enrich the world without destabilizing     |
+| balance.                                                     |
++--------------------------------------------------------------+
+
+
+1. Architecture principles
+The architecture should support a live persistent game, be straightforward enough to ship by a small team, and still be structured so parts can later split into dedicated services. The core rule is server authority: all character state, world time, progression, economy, and item identity decisions are made on the backend. The browser is a presentation and command client, never the source of truth.
+Modular monolith first: one deployable backend process with strict internal module boundaries, then extract services only when operational pain justifies it.
+Domain-driven structure: accounts, character lifecycle, simulation, economy, world content, messaging, and AI-assisted systems each get their own bounded context.
+Event-first design: important gameplay actions emit domain events so systems such as progression, achievements, newsfeeds, moderation, and analytics can react cleanly.
+Human-in-the-loop AI: AI can propose emergent skills and classification outcomes, but final canonical game data changes are reviewed and versioned.
+Live-ops friendly content: worlds, planets, nations, races, items, skill definitions, event templates, and wheel tables should be data-driven rather than hard-coded.
+2. Recommended technology stack
+2.1 Primary stack
+
+[Table 3]
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Layer                 | Recommended choice                     | Why                                                          | Fallback / note                                     |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Frontend              | Next.js + TypeScript                   | Good browser delivery, SSR/admin tooling, mature ecosystem   | SvelteKit also viable                               |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Backend app           | NestJS + TypeScript                    | Structured modules, DI, websockets, schedulers, validation,  | Fastify + custom modules if you want less framework |
+|                       |                                        | agent-friendly code organization                             |                                                     |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Database              | PostgreSQL                             | Reliable relational core for persistent authoritative MMO    | Must remain source of truth                         |
+|                       |                                        | state                                                        |                                                     |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Cache / queue         | Redis                                  | Fast ephemeral state, locks, rate limits, jobs, pub-sub      | Optional early, strongly recommended by alpha       |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Realtime transport    | WebSocket gateway                      | Good fit for text/UI commands, notifications, timeline       | SSE acceptable for simpler read updates             |
+|                       |                                        | updates                                                      |                                                     |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Search/log inspection | OpenSearch or PostgreSQL FTS initially | Useful for admin tools and content search                    | Add later if needed                                 |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+| Ops packaging         | Docker Compose on Windows host         | Reproducible multi-component deployment                      | Can wrap with desktop management panel              |
++-----------------------+----------------------------------------+--------------------------------------------------------------+-----------------------------------------------------+
+
+
+2.2 Why not microservices from day one
+A true microservice MMO stack adds coordination costs, distributed tracing complexity, and operational overhead before gameplay value exists. Start with a modular monolith that enforces clean interfaces internally. Design every module as if it could become a service later, but keep runtime deployment simple until concurrency, scale, or team size proves the need to split.
+3. Logical system landscape
+The platform should be separated into player-facing apps, authoritative game backend modules, operational components, and content/AI pipelines.
+
+[Table 4]
++-----------------+-----------------------------------------------------------+-------------------------------------------------------------+
+| Zone            | Components                                                | Responsibilities                                            |
++-----------------+-----------------------------------------------------------+-------------------------------------------------------------+
+| Player surface  | Game UI, authentication pages, character creation wheel,  | Render current state, accept commands, show notifications,  |
+|                 | inbox, market, settlement screens, timelines              | never resolve authoritative game logic                      |
++-----------------+-----------------------------------------------------------+-------------------------------------------------------------+
+| Core backend    | Account, character lifecycle, simulation engine, action   | Server-authoritative gameplay and world state               |
+|                 | resolver, progression, inventory/item identity, economy,  |                                                             |
+|                 | world, chat, moderation                                   |                                                             |
++-----------------+-----------------------------------------------------------+-------------------------------------------------------------+
+| Ops and support | Admin panel, observability, backups, content tools, AI    | Operate, inspect, patch, moderate, and evolve the game      |
+|                 | proposal review, deployment wrappers                      | safely                                                      |
++-----------------+-----------------------------------------------------------+-------------------------------------------------------------+
+
+
+4. Runtime architecture
+4.1 Deployment topology
+On the dedicated Windows machine, run the platform as a controlled set of containers or packaged processes. A reverse proxy terminates TLS and routes traffic to the web app, API, websocket gateway, and admin panel. PostgreSQL holds durable state. Redis supports locks, queues, pub-sub, and short-lived projections. A background worker process executes scheduled simulation work and asynchronous jobs.
+
+[Table 5]
++--------------------------------------------------------------+
+| Internet / Domain / -> Reverse Proxy (Caddy or Nginx) / ->   |
+| Web App (Game UI + Admin UI) / -> API / WebSocket Gateway /  |
+| -> Background Worker / Scheduler / -> AI Proposal Worker /   |
+| -> PostgreSQL / -> Redis / -> Object Storage / File Volume   |
+| for exports, backups, logs                                   |
++--------------------------------------------------------------+
+
+
+4.2 Recommended ports and routing
+
+[Table 6]
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| Public path / port | Internal target  | Purpose                        | Notes                                      |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| 443                | Reverse proxy    | HTTPS entry point              | Use TLS cert automation                    |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| /                  | Web app          | Player UI                      | Serve static assets and SSR routes         |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| /api               | Backend API      | Commands, reads, auth          | Rate-limit login and risky endpoints       |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| /ws                | Realtime gateway | Notifications and live updates | Token-authenticated connection             |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+| /admin             | Admin UI + API   | Operations and moderation      | Restrict by auth and optional IP allowlist |
++--------------------+------------------+--------------------------------+--------------------------------------------+
+
+
+5. Backend module blueprint
+Auth and Accounts
+Registration, login, password reset, session tokens, 2FA, one-character enforcement at account level, ban and appeal flags.
+Character Lifecycle
+Birth flow, infant state, family assignment, lineage data, permadeath handling, post-death lockouts, memorial records, rebirth eligibility rules.
+World Registry
+Universes, planets, planes, nations, settlements, districts, unlock states, ownership, public events, travel topology.
+Simulation Engine
+Accelerated clock, daily ticks, hourly sub-ticks, family NPC updates, production cycles, health, aging, environmental drift, queued events.
+Action Resolver
+Receives player actions, validates context and cost, computes outcomes, emits domain events, and schedules delayed results.
+Progression Engine
+Visible stats, hidden potential layer, skill XP, passive skills, growth ceilings, breakthrough rolls, decay rules.
+Economy and Market
+Currencies, taxation, regional market boards, contracts, player trade, price histories, escrow, anti-fraud controls.
+Inventory and Item Identity
+Stackables, unique items, canonical item IDs, variation IDs, provenance, durability, ownership history.
+Crafting and Research
+Recipes, experimentation, invention, discovery records, research queues, lab/workshop context, failure states.
+Social and Governance
+Guilds, households, settlements, factions, votes, offices, laws, permissions, titles, diplomacy.
+Messaging and Presence
+Inbox, notifications, chat, announcements, system feeds, player presence state.
+Moderation and Safety
+Reports, audit logs, anti-abuse rules, content moderation hooks, gm interventions.
+6. Simulation architecture
+The world is real-time and always running, but the implementation should not naively tick every entity every second. Use hierarchical simulation. High-importance active entities update more often, while dormant or low-impact entities use coarse-grained simulation windows.
+6.1 Time model
+1 real-life day = 30 in-game days.
+Use UTC internally; store player timezone only for display preferences.
+Represent world time as an authoritative simulation timestamp plus an acceleration multiplier.
+Support event replay and deterministic reprocessing where possible for debugging.
+6.2 Tick strategy
+
+[Table 7]
++------------------+-----------------------------+-----------------------------------------------------------+
+| Layer            | Cadence                     | Examples                                                  |
++------------------+-----------------------------+-----------------------------------------------------------+
+| Realtime         | On action / websocket event | Player command resolution, combat exchange window, chat,  |
+|                  |                             | market buy/sell, notifications                            |
++------------------+-----------------------------+-----------------------------------------------------------+
+| Fast tick        | Every few seconds           | Travel progress, local encounters, health changes during  |
+|                  |                             | crisis, workshop jobs near completion                     |
++------------------+-----------------------------+-----------------------------------------------------------+
+| Daily game tick  | Once per in-game day        | Aging, family lifecycle, wages, taxes, crop progress,     |
+|                  |                             | maintenance, passive learning                             |
++------------------+-----------------------------+-----------------------------------------------------------+
+| Batch / archival | Scheduled job windows       | Historical aggregation, market summaries, data cleanup,   |
+|                  |                             | analytics rollups                                         |
++------------------+-----------------------------+-----------------------------------------------------------+
+
+
+6.3 Family NPC simulation
+Because each new character starts as an infant in an NPC-run family, family simulation must be first-class. Families need household budgets, shelter quality, culture, risk profile, social ties, profession patterns, and child care behavior. Do not model every micro-action continuously. Instead store household state and resolve it through event windows, scheduled routines, and exception-based incidents.
+7. Data architecture
+7.1 Storage split
+PostgreSQL for durable transactional state.
+Redis for locks, jobs, transient read models, rate limits, websocket fanout support.
+Object storage or structured file volumes for backups, exports, logs, generated reports, and content bundles.
+Optional analytics warehouse later if product telemetry grows beyond operational queries.
+7.2 Core entities
+The initial schema should be normalized around the following core tables or equivalent domain aggregates: accounts, characters, character_current_stats, character_potential_stats, character_skills, character_passive_traits, families, lineages, world_nodes, settlements, market_listings, currencies, inventories, items, item_variants, craft_jobs, research_projects, action_logs, domain_events, notifications, chat_messages, ai_skill_proposals.
+7.3 Event log
+Important gameplay changes should also write domain events. This is not a full event-sourced platform, but it gives you an append-only audit trail for debugging, balancing, moderation, and retrospective analytics.
+ActionSubmitted
+ActionResolved
+CharacterBorn
+CharacterDied
+SkillUnlocked
+PotentialBreakpointReached
+ItemCreated
+MarketTradeExecuted
+SettlementUnlocked
+AIProposalCreated
+AIProposalApproved
+8. Character and progression architecture
+8.1 Dual stat layer implementation
+Each character stores a visible current layer and a hidden potential layer. The visible layer is used during actions and UI rendering. The hidden layer affects gain efficiency, ceilings, breakthrough chance, passive affinity, and event bias. This hidden layer must remain server-only except for carefully designed indirect hints.
+
+[Table 8]
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+| Aspect                         | Visible layer              | Hidden layer                       | Implementation note                            |
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+| Strength / intelligence / etc. | Current usable value       | Potential, elasticity, ceiling     | Compute effective gains server-side            |
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+| Skills                         | Known skill level and XP   | Affinity, specialization resonance | Can drive faster/slower learning               |
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+| Passive traits                 | Maybe partially surfaced   | Often fully hidden                 | Use narrative hints rather than direct numbers |
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+| Luck / doom bias               | Usually hidden or obscured | Fully hidden control weights       | Affects scenario selection distributions       |
++--------------------------------+----------------------------+------------------------------------+------------------------------------------------+
+
+
+8.2 Scale handling
+Stats and skills range from 0 to 1,000,000, but impact must use non-linear curves. Level 100 represents peak human. Values above 100 are explicitly superhuman. Never let UI or formulas imply that 500 is only five times better than 100; each domain must define threshold effects, diminishing returns, and categorical capability jumps.
+8.3 XP and growth
+Experience requirements scale progressively by level band.
+Hidden potential modifies learning rate, plateau chance, breakthrough chance, and upper softness, not simple guaranteed power.
+Age, health, environment, mentorship, tools, and social conditions act as growth modifiers.
+Decay should exist for some underused or physically maintained areas, but sparingly to avoid purely punitive design.
+9. AI-assisted emergent skill pipeline
+AI should assist creativity, categorization, and proposal generation, but never directly mutate the canonical live game schema without review. Treat AI as a proposal engine behind a rules gate.
+9.1 Flow
+Player actions emit granular semantic tags such as material, intent, tool class, context, and result pattern.
+A detector identifies potential skill novelty when repeated action clusters do not map well to existing skill definitions.
+An AI worker receives only the minimal sanitized context needed to classify whether an existing skill already covers the behavior and, if not, proposes a new skill definition.
+A rules engine scores the proposal against duplicate risk, naming rules, taxonomy fit, exploit risk, and balance constraints.
+Approved proposals become pending content records for human review or controlled auto-approval in tightly bounded categories.
+Only approved records create live skill definitions and trigger unlock logic.
+9.2 Safety boundaries
+No raw prompt output is trusted as live game data.
+Every AI proposal gets a versioned record, provenance, score, and moderation status.
+Taxonomy and naming conventions must be enforced programmatically.
+Budget AI use carefully; batch and cache repeated analysis.
+Keep a non-AI fallback path so the game still functions if the AI provider is down.
+10. Item identity and content architecture
+10.1 Canonical item identity
+Items that share the same unique name plus the same defining stat package should resolve to the same canonical item ID. Items that differ slightly should map to a variation ID under the canonical parent or become a new canonical item when the difference crosses a design threshold.
+10.2 Recommended model
+item_template_id for design-time category definitions.
+item_canonical_id for identical real outcomes recognized across the world.
+item_variation_id for stat or property deviations within a canonical family.
+item_instance_id for an individual owned object, including durability, provenance, current owner, and embedded modifiers.
+This structure lets markets aggregate meaningfully while still preserving uniqueness where needed.
+11. Economy architecture
+The economy should be player-driven by default, with NPC intervention limited to starter safeguards, emergency sinks/sources, and world simulation needs. Server authority and auditing are essential because economic abuse will become one of the highest operational risks.
+11.1 Core economy systems
+Regional markets with settlement-level availability and logistics impact.
+Player listings, contracts, commissions, and escrow.
+Crafting supply chains and quality variance.
+Taxation and fees routed to settlement or state systems where appropriate.
+Price history, suspicious activity detection, and anti-dupe controls.
+11.2 Anti-abuse controls
+Idempotent trade transactions.
+Inventory reservation during listing and purchase flows.
+Server-side revalidation at every commit step.
+Full audit logs for currency and item movement.
+Rate limits and risk flags for suspicious transfer patterns.
+12. Frontend architecture
+12.1 Player client
+The game UI should behave like a dense strategy/life-sim interface rather than a twitch game. Favor an app-shell layout with timeline, command panel, context panel, inbox, inventory, market, and world map abstractions. Use optimistic UI only for low-risk affordances; authoritative results always come from the server.
+12.2 State management
+Use query-based reads for durable views.
+Use websocket events to invalidate or patch active views.
+Keep ephemeral command composition local until submitted.
+Separate server models from view models so UI refactors do not leak into domain code.
+12.3 Admin panel
+The admin surface should be a first-class application, not an afterthought. It needs account lookup, character inspection, event logs, economy controls, content publishing, AI proposal review, world state toggles, announcements, and emergency intervention tools.
+13. Security, identity, and moderation
+Use secure password hashing and short-lived access tokens with refresh rotation.
+Protect websocket upgrades with authenticated session validation.
+Store secrets outside code and rotate them.
+Add role-based access control for admin and GM tooling.
+Record immutable moderation and intervention logs.
+Sanitize all player-submitted text and protect admin surfaces against CSRF, XSS, and SSRF classes of issues.
+14. Hosting blueprint for your Windows server
+14.1 Recommended operating model
+Use Docker Desktop or a compatible Windows container runtime only if it is stable on your host. Otherwise use WSL2-backed Docker Compose. Put the game stack behind Caddy or Nginx. Keep PostgreSQL data and backups on dedicated volumes. Store environment variables in external files not committed to source control.
+14.2 Recommended deployed components
+
+[Table 9]
++---------------------+--------------------------------+--------------------------------------+
+| Component           | Run mode                       | Purpose                              |
++---------------------+--------------------------------+--------------------------------------+
+| Reverse proxy       | Container or native service    | TLS, routing, compression, headers   |
++---------------------+--------------------------------+--------------------------------------+
+| Web app             | Container                      | Browser UI and admin front-end       |
++---------------------+--------------------------------+--------------------------------------+
+| Backend API/gateway | Container                      | Core authoritative backend           |
++---------------------+--------------------------------+--------------------------------------+
+| Worker / scheduler  | Container                      | Simulation jobs and async tasks      |
++---------------------+--------------------------------+--------------------------------------+
+| PostgreSQL          | Container or dedicated install | Durable state                        |
++---------------------+--------------------------------+--------------------------------------+
+| Redis               | Container                      | Cache, queue, locks                  |
++---------------------+--------------------------------+--------------------------------------+
+| Backup job          | Scheduled task / container     | Database dumps and file snapshotting |
++---------------------+--------------------------------+--------------------------------------+
+
+
+14.3 DNS and certificates
+Point your domain A or AAAA record to the public IP of the host or router.
+Forward ports 80 and 443 to the reverse proxy.
+Use automated certificate issuance through Caddy or Let's Encrypt-compatible tooling.
+Keep the admin panel behind a subdomain or path with stronger access policies.
+14.4 Management panel wrapper
+Because you want a runnable application with a management panel, build or package a local control app that can start, stop, update, inspect, and back up the stack. The simplest version is an Electron or Tauri desktop shell around admin/ops routes plus local service actions. It should expose stack health, connected users, background jobs, last backup time, and maintenance mode controls.
+15. Observability and operations
+Structured logs with correlation IDs.
+Metrics for API latency, websocket count, tick duration, queue depth, failed jobs, DB load, and market transaction rates.
+Alerting on backup failure, DB connection exhaustion, queue stalls, and simulation lag.
+Admin event timeline for deployment history and live-ops changes.
+Periodic integrity checks for item duplication, orphan listings, and broken references.
+16. Testing strategy
+16.1 Automated testing layers
+Unit tests for formulas, validators, deterministic progression pieces, and resolver rules.
+Integration tests for backend modules and database transactions.
+Simulation tests for multi-day lifecycle behavior, family progression, and market drift.
+Contract tests between frontend client and API schemas.
+End-to-end tests for registration, birth flow, action submission, market trade, and death handling.
+Load tests for websocket concurrency and tick processing.
+16.2 Special test harnesses
+Deterministic seed harness for world generation and wheel outcomes.
+Golden scenario tests for AI proposal pipeline decisions.
+Economy abuse test packs for race conditions and dupe attempts.
+Replay harness for action/event timelines to reproduce bugs.
+17. CI/CD and environment flow
+Use branch-based development with automated linting, type checking, tests, and artifact builds. Keep dev, staging, and production configuration separated. For a small self-hosted setup, staging can be another compose profile or another machine if available.
+Pre-merge: lint, types, unit tests, migration checks, API schema checks.
+Pre-release: integration tests, smoke tests, content validation, backup verification.
+Deploy: rolling restart or controlled maintenance window, migration step, health checks, websocket reconnect handling.
+Post-deploy: smoke commands, metrics review, admin confirmation.
+18. Suggested repository layout
+
+[Table 10]
++---------------------+-----------------------------------------------------------+
+| Path                | Purpose                                                   |
++---------------------+-----------------------------------------------------------+
+| /apps/web           | Player and admin frontend                                 |
++---------------------+-----------------------------------------------------------+
+| /apps/server        | Authoritative backend HTTP and websocket app              |
++---------------------+-----------------------------------------------------------+
+| /apps/worker        | Background jobs and simulation scheduler                  |
++---------------------+-----------------------------------------------------------+
+| /packages/domain    | Shared domain models and events                           |
++---------------------+-----------------------------------------------------------+
+| /packages/content   | Versioned data definitions and validation                 |
++---------------------+-----------------------------------------------------------+
+| /packages/ui        | Shared frontend UI components                             |
++---------------------+-----------------------------------------------------------+
+| /packages/contracts | API schemas and typed DTOs                                |
++---------------------+-----------------------------------------------------------+
+| /infra              | Compose files, proxy configs, deployment scripts, backup  |
+|                     | scripts                                                   |
++---------------------+-----------------------------------------------------------+
+| /docs               | Architecture, ops, balancing, data dictionaries           |
++---------------------+-----------------------------------------------------------+
+
+
+19. Phased implementation roadmap
+Foundation: auth, account management, domain model skeleton, PostgreSQL, Redis, basic web shell, admin shell, observability baseline.
+Character lifecycle: birth flow, family assignment, world registry, one-character enforcement, permadeath path.
+Core simulation: time engine, daily tick model, family simulation, action resolver, visible and hidden progression.
+Economy and items: inventory, canonical item identity, market listings, trade commit path, anti-abuse auditing.
+Crafting and research: recipe execution, experimentation, invention pipeline, quality and material systems.
+AI-assisted systems: proposal worker, rules gate, admin review queue, bounded live publishing.
+World expansion: nations, settlement unlocks, politics, travel, universes/planes growth systems.
+Live ops hardening: backups, moderation, alerting, recovery drills, performance tuning, staging discipline.
+20. Key risks and architectural mitigations
+
+[Table 11]
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| Risk                                  | Impact                           | Mitigation                                                   |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| AI-generated skill spam or duplicates | Content bloat and balance damage | Proposal gating, duplicate detection, human review, category |
+|                                       |                                  |  caps                                                        |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| Economy exploits                      | Trust loss and inflation         | Authoritative transactions, audit logs, invariants, abuse    |
+|                                       |                                  | dashboards                                                   |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| Simulation cost explosion             | Server lag and outages           | Hierarchical ticking, batch resolution, hot path profiling   |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| Permadeath frustration                | Player churn                     | Strong onboarding, memorialization, legacy benefits, clear   |
+|                                       |                                  | rules                                                        |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+| Admin tool abuse                      | Severe trust and data risk       | RBAC, audit logging, MFA, restricted deployment access       |
++---------------------------------------+----------------------------------+--------------------------------------------------------------+
+
+
+21. Architecture decisions to lock early
+Authoritative backend and database choice.
+Modular monolith boundary map.
+Canonical event names and payload shape.
+Character lifecycle rules, especially one-character policy and death consequences.
+Item identity rules and market commit invariants.
+AI proposal governance rules and approval workflow.
+Backup, restore, and maintenance-mode procedures.
+22. Immediate next deliverables
+Service/module responsibility matrix with concrete APIs.
+Database ERD and migration plan.
+Simulation timing spec and tick budget targets.
+Admin panel wireframes and command catalog.
+Infrastructure compose bundle and Windows runbook.
+AI proposal JSON schema and review workflow spec.

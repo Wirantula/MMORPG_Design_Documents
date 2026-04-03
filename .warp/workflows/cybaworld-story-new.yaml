@@ -1,0 +1,11 @@
+name: CybaWorld Story New
+command: npm run story:new -- {{story_id}} "{{story_title}}"
+tags: [cybaworld, planning, stories]
+description: Generate a new story file from the project story template.
+arguments:
+  - name: story_id
+    description: Story identifier in Epic.Story format.
+    default_value: 2.1
+  - name: story_title
+    description: Story title text.
+    default_value: account identity flow

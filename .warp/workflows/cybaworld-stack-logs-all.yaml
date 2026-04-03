@@ -1,0 +1,4 @@
+name: CybaWorld Stack Logs (All)
+command: docker compose -f infra/compose/docker-compose.yml logs -f
+tags: [cybaworld, infra, logs]
+description: Follow logs for all local infrastructure services.

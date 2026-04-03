@@ -1,0 +1,4 @@
+name: CybaWorld Stack Down
+command: docker compose -f infra/compose/docker-compose.yml down
+tags: [cybaworld, infra, docker]
+description: Stop the local PostgreSQL and Redis stack.
