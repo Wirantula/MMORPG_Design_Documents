@@ -112,6 +112,11 @@ export interface StatsInitialisedPayload {
   potentialKeyCount: number;
 }
 
+export interface TraitsRolledPayload {
+  characterId: string;
+  traitBuckets: Record<string, string>; // traitName → weightBucket (low/medium/high), never exact values
+}
+
 export interface LifeStageTransitionPayload {
   characterId: string;
   previousStage: string;
@@ -134,6 +139,7 @@ export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
+export type TraitsRolled = DomainEvent<'TraitsRolled', TraitsRolledPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 
 export type KnownDomainEvent =
@@ -151,6 +157,7 @@ export type KnownDomainEvent =
   | AccountLoggedIn
   | CharacterBorn
   | StatsInitialised
+  | TraitsRolled
   | LifeStageTransition;
 
 // ── Listener signature ────────────────────────────────────────────
