@@ -144,6 +144,21 @@ export interface NeedsCriticalWarningPayload {
   gameDay: number;
 }
 
+export interface ConditionAppliedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+  durationDays: number;
+}
+
+export interface ConditionResolvedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -163,6 +178,8 @@ export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedP
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
+export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
+export type ConditionResolved = DomainEvent<'ConditionResolved', ConditionResolvedPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -183,7 +200,9 @@ export type KnownDomainEvent =
   | ConnectionClosed
   | StatsInitialised
   | LifeStageTransition
-  | NeedsCriticalWarning;
+  | NeedsCriticalWarning
+  | ConditionApplied
+  | ConditionResolved;
 
 // ── Listener signature ────────────────────────────────────────────
 
