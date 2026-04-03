@@ -71,6 +71,15 @@ export interface ContractBreachedPayload {
   escrowAmount: number;
 }
 
+export interface CurrencyTransferredPayload {
+  transactionId: string;
+  fromId: string | null;
+  toId: string | null;
+  currencyId: string;
+  amount: number;
+  reason: string;
+}
+
 export interface EconomyExportCompletedPayload {
   filePath: string;
   rowCount: number;
@@ -119,6 +128,7 @@ export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', Offli
 export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type CurrencyTransferred = DomainEvent<'CurrencyTransferred', CurrencyTransferredPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
@@ -133,6 +143,7 @@ export type KnownDomainEvent =
   | ActionCancelled
   | OfflineReportGenerated
   | MarketTradeExecuted
+  | CurrencyTransferred
   | ContractCompleted
   | ContractBreached
   | EconomyExportCompleted
