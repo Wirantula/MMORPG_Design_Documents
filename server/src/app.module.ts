@@ -9,6 +9,7 @@ import { EconomyModule } from './modules/economy/economy.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CharactersModule } from './modules/characters/characters.module';
+import { WorldModule } from './modules/world/world.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CharactersModule } from './modules/characters/characters.module';
     AccountsModule,
     AuthModule,
     CharactersModule,
+    WorldModule,
   ],
   providers: [AppLogger, DomainEventBus],
   exports: [AppLogger, DomainEventBus],
