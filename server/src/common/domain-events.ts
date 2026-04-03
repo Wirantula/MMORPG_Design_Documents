@@ -106,6 +106,12 @@ export interface CharacterBornPayload {
   };
 }
 
+export interface CharacterDiedPayload {
+  accountId: string;
+  characterId: string;
+  reason: string;
+}
+
 export interface ConnectionEstablishedPayload {
   accountId: string;
   socketId: string;
@@ -143,6 +149,21 @@ export interface NeedsCriticalWarningPayload {
   gameDay: number;
 }
 
+export interface ConditionAppliedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+  durationDays: number;
+}
+
+export interface ConditionResolvedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -156,12 +177,15 @@ export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', Econo
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
+export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
 export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
 export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
 export type TraitsRolled = DomainEvent<'TraitsRolled', TraitsRolledPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
+export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
+export type ConditionResolved = DomainEvent<'ConditionResolved', ConditionResolvedPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -177,12 +201,15 @@ export type KnownDomainEvent =
   | AccountCreated
   | AccountLoggedIn
   | CharacterBorn
+  | CharacterDied
   | ConnectionEstablished
   | ConnectionClosed
   | StatsInitialised
   | TraitsRolled
   | LifeStageTransition
-  | NeedsCriticalWarning;
+  | NeedsCriticalWarning
+  | ConditionApplied
+  | ConditionResolved;
 
 // ── Listener signature ────────────────────────────────────────────
 

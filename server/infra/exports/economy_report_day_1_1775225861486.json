@@ -1,0 +1,27 @@
+{
+  "exportedAt": "2026-04-03T14:17:41.486Z",
+  "gameDay": 1,
+  "summary": [
+    {
+      "canonicalId": "iron-sword",
+      "totalVolume": 1,
+      "totalValue": 100,
+      "avgPrice": 100,
+      "priceVelocity": 0
+    }
+  ],
+  "sinks": {
+    "gameDay": 1,
+    "totalFees": 1,
+    "totalEscrowLost": 0
+  },
+  "faucets": {
+    "gameDay": 1,
+    "totalRewards": 0,
+    "totalNpcPurchases": 0
+  },
+  "shortages": [],
+  "inflation": [],
+  "activeListings": 0,
+  "activeContracts": 0
+}
