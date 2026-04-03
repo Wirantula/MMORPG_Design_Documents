@@ -9,6 +9,7 @@ import {
 import { SimulationService } from '../simulation.service';
 import { getActionDefinition } from './action-catalog';
 import { ActionQueue, type ActionSlot } from './action-queue';
+import type { NeedsService } from '../../needs/needs.service';
 
 export interface ActionResult {
   ok: boolean;
@@ -20,11 +21,17 @@ export interface ActionResult {
 export class ActionService {
   private readonly logger = new Logger(ActionService.name);
   private readonly queue = new ActionQueue();
+  private needsService: NeedsService | null = null;
 
   constructor(
     private readonly eventBus: DomainEventBus,
     private readonly simulationService: SimulationService,
   ) {}
+
+  /** Injected after bootstrap so there's no hard dependency. */
+  setNeedsService(service: NeedsService): void {
+    this.needsService = service;
+  }
 
   // ── Commands ──────────────────────────────────────────────────
 
@@ -158,6 +165,11 @@ export class ActionService {
       if (worldNowMs >= slot.endsAtWorldMs) {
         slot.state = 'completed';
 
+        // Apply needs-based modifier to action rewards
+        const needsModifier = this.needsService
+          ? this.needsService.getModifier(slot.characterId)
+          : 1.0;
+
         const event: ActionResolved = {
           eventId: generateEventId(),
           type: 'ActionResolved',
@@ -166,7 +178,7 @@ export class ActionService {
             characterId: slot.characterId,
             definitionId: slot.definitionId,
             completedAtWorldMs: slot.endsAtWorldMs,
-            rewards: {}, // placeholder – progression engine will fill this in later
+            rewards: { needsModifier },
           },
         };
         this.eventBus.emit(event);
