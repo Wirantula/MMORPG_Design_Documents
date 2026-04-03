@@ -36,12 +36,26 @@ export interface ActionCancelledPayload {
   cancelledAtWorldMs: number;
 }
 
+export interface OfflineReportGeneratedPayload {
+  characterId: string;
+  offlineDurationMs: number;
+  actionsCompleted: number;
+  totalXpEarned: number;
+  warnings: string[];
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
 export type ActionCancelled = DomainEvent<'ActionCancelled', ActionCancelledPayload>;
+export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', OfflineReportGeneratedPayload>;
 
-export type KnownDomainEvent = TickCompleted | ActionSubmitted | ActionResolved | ActionCancelled;
+export type KnownDomainEvent =
+  | TickCompleted
+  | ActionSubmitted
+  | ActionResolved
+  | ActionCancelled
+  | OfflineReportGenerated;
 
 // ── Listener signature ────────────────────────────────────────────
 

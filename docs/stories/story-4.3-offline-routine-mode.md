@@ -1,5 +1,5 @@
 # Story 4.3 — Offline Routine Mode
-**Epic:** 4 | **Role:** Backend Agent | **Status:** Ready ✅ (4.2 done)
+**Epic:** 4 | **Role:** Backend Agent | **Status:** Done ✅
 
 ## Problem / intent
 Characters should follow routines while the player is offline so the game stays playable.

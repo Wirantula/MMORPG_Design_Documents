@@ -18,6 +18,7 @@ export class ObservabilityService {
     currentGameDay: 0,
     driftMs: 0,
   };
+  private offlineRoutinesProcessed = 0;
 
   recordSimulationMetrics(metrics: SimulationMetricsSnapshot): void {
     this.simMetrics = metrics;
@@ -25,6 +26,14 @@ export class ObservabilityService {
 
   getSimulationMetrics(): SimulationMetricsSnapshot {
     return { ...this.simMetrics };
+  }
+
+  recordOfflineRoutinesProcessed(count: number): void {
+    this.offlineRoutinesProcessed += count;
+  }
+
+  getOfflineRoutinesProcessed(): number {
+    return this.offlineRoutinesProcessed;
   }
 
   renderPrometheusMetrics(): string {
@@ -60,6 +69,9 @@ export class ObservabilityService {
       '# HELP cybaworld_simulation_drift_ms Tick loop drift from expected schedule.',
       '# TYPE cybaworld_simulation_drift_ms gauge',
       `cybaworld_simulation_drift_ms ${sim.driftMs}`,
+      '# HELP cybaworld_offline_routines_processed_total Total offline routine batches processed.',
+      '# TYPE cybaworld_offline_routines_processed_total counter',
+      `cybaworld_offline_routines_processed_total ${this.offlineRoutinesProcessed}`,
       '',
     ].join('\n');
   }
