@@ -1,17 +1,17 @@
 # Story 3.2 — Browser Client Shell
-**Epic:** 3 | **Role:** Frontend Agent | **Status:** Blocked on 3.1
+**Epic:** 3 | **Role:** Frontend Agent | **Status:** Review
 
 ## Problem / intent
 Players need a text-first readable interface to navigate the world with live updates.
 
 ## Acceptance criteria
-- [ ] App shell has 5 panels: CharacterPanel, LocationPanel, ActionQueuePanel, ChatPanel, NotificationsPanel
-- [ ] WS client connects on login, reconnects automatically on disconnect (exponential backoff)
-- [ ] Character state updates in real time from character:update events
-- [ ] Action queue shows active/queued actions from world:tick events
-- [ ] Chat renders chat:message events and sends via chat:send command
-- [ ] All panels reachable via keyboard (Tab navigation)
-- [ ] Loading and error states shown for all async operations
+- [x] App shell has 5 panels: CharacterPanel, LocationPanel, ActionQueuePanel, ChatPanel, NotificationsPanel
+- [x] WS client connects on login, reconnects automatically on disconnect (exponential backoff)
+- [x] Character state updates in real time from character:update events
+- [x] Action queue shows active/queued actions from world:tick events
+- [x] Chat renders chat:message events and sends via chat:send command
+- [x] All panels reachable via keyboard (Tab navigation)
+- [x] Loading and error states shown for all async operations
 
 ## Dependencies
 - 3.1 ✅
