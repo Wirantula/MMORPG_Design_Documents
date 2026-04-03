@@ -89,6 +89,14 @@ export interface CharacterBornPayload {
   };
 }
 
+export interface LifeStageTransitionPayload {
+  characterId: string;
+  previousStage: string;
+  newStage: string;
+  ageInGameYears: number;
+  gameDay: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -99,6 +107,7 @@ export type ContractCompleted = DomainEvent<'ContractCompleted', ContractComplet
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
+export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -110,7 +119,8 @@ export type KnownDomainEvent =
   | ContractCompleted
   | ContractBreached
   | EconomyExportCompleted
-  | CharacterBorn;
+  | CharacterBorn
+  | LifeStageTransition;
 
 // ── Listener signature ────────────────────────────────────────────
 
