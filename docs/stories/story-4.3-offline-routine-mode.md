@@ -1,17 +1,17 @@
 # Story 4.3 — Offline Routine Mode
-**Epic:** 4 | **Role:** Backend Agent | **Status:** Review ✅ (implemented)
+**Epic:** 4 | **Role:** Backend Agent | **Status:** Done ✅
 
 ## Problem / intent
 Characters should follow routines while the player is offline so the game stays playable.
 
 ## Acceptance criteria
-- [x] Characters can have up to 3 routine slots (actionType + priority)
-- [x] Offline processing runs at 60% efficiency vs active play
-- [x] Routine processing skips if needs (hunger/fatigue) are critical
-- [x] Dangerous actions blocked for infant/child life stages
-- [x] On next login, player receives OfflineReport: duration, actions_completed, xp_earned, needs_changes, warnings
-- [ ] Routine state persisted per character (deferred — requires persistence layer)
-- [x] Unit tests: routine execution, safety defaults, efficiency penalty, report generation
+- [ ] Characters can have up to 3 routine slots (actionType + priority)
+- [ ] Offline processing runs at 60% efficiency vs active play
+- [ ] Routine processing skips if needs (hunger/fatigue) are critical
+- [ ] Dangerous actions blocked for infant/child life stages
+- [ ] On next login, player receives OfflineReport: duration, actions_completed, xp_earned, needs_changes, warnings
+- [ ] Routine state persisted per character
+- [ ] Unit tests: routine execution, safety defaults, efficiency penalty, report generation
 
 ## Dependencies
 - 4.2 ✅

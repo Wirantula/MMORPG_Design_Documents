@@ -38,7 +38,7 @@ describe('ObservabilityService', () => {
     const output = service.renderPrometheusMetrics();
     const lines = output.split('\n').filter((l) => !l.startsWith('#') && l.trim() !== '');
 
-    // 4 process + 5 simulation + 1 offline = 10 metric lines
+    // 4 process metrics + 5 simulation metrics + 1 offline routines metric
     expect(lines.length).toBe(10);
 
     for (const line of lines) {

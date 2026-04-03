@@ -38,9 +38,9 @@ export interface ActionCancelledPayload {
 
 export interface OfflineReportGeneratedPayload {
   characterId: string;
-  durationMs: number;
+  offlineDurationMs: number;
   actionsCompleted: number;
-  xpEarned: number;
+  totalXpEarned: number;
   warnings: string[];
 }
 

@@ -3,8 +3,8 @@ import { RealtimeGateway } from '../src/modules/realtime/realtime.gateway';
 import { SimulationService } from '../src/modules/simulation/simulation.service';
 import { TickService } from '../src/modules/simulation/tick.service';
 import { ActionService } from '../src/modules/simulation/actions/action.service';
-import { DomainEventBus } from '../src/common/domain-events';
 import { ObservabilityService } from '../src/modules/observability/observability.service';
+import { DomainEventBus } from '../src/common/domain-events';
 import { AppLogger } from '../src/common/logger.service';
 import type { ServerEventEnvelope, AckPayload } from '../src/contracts/message-envelope';
 import type { Socket } from 'socket.io';
@@ -29,7 +29,6 @@ function createGateway() {
   const observability = new ObservabilityService();
   const actionService = new ActionService(logger, eventBus, simulationService);
   const tickService = new TickService(logger, eventBus, simulationService, actionService, observability);
-  tickService.stopLoop();
   return new RealtimeGateway(logger, simulationService, tickService, actionService);
 }
 

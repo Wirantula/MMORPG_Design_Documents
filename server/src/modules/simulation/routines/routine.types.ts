@@ -1,71 +1,78 @@
 /**
- * Routine system types for offline play processing.
+ * Routine types for Story 4.3 — Offline Routine Mode.
  *
- * Characters can configure up to MAX_ROUTINE_SLOTS routines that execute
- * automatically while the player is offline, at reduced efficiency.
+ * Characters can define up to 3 routine slots that execute
+ * automatically while the player is offline at 60 % efficiency.
  */
+
+import type { ActionCategory } from '../actions/action-catalog';
+
+// ── Life stages ────────────────────────────────────────────────────
+
+export type LifeStage = 'infant' | 'child' | 'teen' | 'adult' | 'elder';
+
+/** Action categories considered dangerous and blocked for infant / child. */
+export const DANGEROUS_CATEGORIES: ReadonlySet<ActionCategory> = new Set([
+  'combat',
+  'travel',
+]);
+
+// ── Needs ──────────────────────────────────────────────────────────
+
+export interface NeedsState {
+  /** 0–100 scale; 0 = starving, 100 = fully fed. */
+  hunger: number;
+  /** 0–100 scale; 0 = exhausted, 100 = fully rested. */
+  fatigue: number;
+}
+
+/** A need is critical when it drops to or below this threshold. */
+export const NEEDS_CRITICAL_THRESHOLD = 10;
+
+// ── Routine slots ──────────────────────────────────────────────────
 
 export const MAX_ROUTINE_SLOTS = 3;
 
-/** Efficiency multiplier applied to offline routine XP and output rewards. */
-export const OFFLINE_EFFICIENCY = 0.6;
-
-/** Life stages where dangerous actions are blocked. */
-export type LifeStage = 'infant' | 'child' | 'adolescent' | 'adult' | 'elder';
-
-export const PROTECTED_LIFE_STAGES: ReadonlySet<LifeStage> = new Set<LifeStage>([
-  'infant',
-  'child',
-]);
-
-/**
- * A single routine slot configured by the player.
- * Priority determines execution order when multiple routines are queued (lower = first).
- */
 export interface RoutineSlot {
+  /** References an ActionDefinition id (e.g. "rest", "forage"). */
   actionType: string;
+  /** Lower number = higher priority (1 is highest). */
   priority: number;
 }
 
-/** Character-level needs snapshot used for routine safety checks. */
-export interface CharacterNeeds {
-  hunger: number; // 0–100, 100 = starving
-  fatigue: number; // 0–100, 100 = exhausted
-}
+// ── Offline state ──────────────────────────────────────────────────
 
-/** Minimal character state required for routine processing. */
-export interface CharacterState {
+export interface CharacterOfflineState {
   characterId: string;
-  lifeStage: LifeStage;
+  /** Real-time ms timestamp when the player went offline. */
+  offlineSinceMs: number;
   routines: RoutineSlot[];
-  needs: CharacterNeeds;
-  /** ISO timestamp when the player went offline, or null if online. */
-  offlineSince: string | null;
+  lifeStage: LifeStage;
+  needs: NeedsState;
 }
 
-/** An individual action completed during offline processing. */
-export interface OfflineActionEntry {
+// ── Offline report ─────────────────────────────────────────────────
+
+export const OFFLINE_EFFICIENCY = 0.6;
+
+export interface OfflineReportEntry {
   actionType: string;
-  completedCount: number;
+  timesCompleted: number;
+  /** XP earned for this action (already efficiency-adjusted). */
   xpEarned: number;
 }
 
-/** Aggregated report delivered to the player on login. */
 export interface OfflineReport {
   characterId: string;
-  /** Total real-time milliseconds the player was offline. */
-  durationMs: number;
-  /** Number of individual actions completed. */
-  actionsCompleted: number;
-  /** Total XP earned (after efficiency penalty). */
-  xpEarned: number;
-  /** Per-action breakdown. */
-  actions: OfflineActionEntry[];
-  /** Changes to needs during offline period. */
+  /** Real-time duration the player was offline (ms). */
+  offlineDurationMs: number;
+  /** World-time duration that elapsed while offline (ms). */
+  worldDurationMs: number;
+  actionsCompleted: OfflineReportEntry[];
+  totalXpEarned: number;
   needsChanges: {
     hungerDelta: number;
     fatigueDelta: number;
   };
-  /** Human-readable warnings (e.g. skipped due to critical needs). */
   warnings: string[];
 }
