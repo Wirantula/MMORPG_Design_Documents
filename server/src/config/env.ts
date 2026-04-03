@@ -11,6 +11,9 @@ const envSchema = z.object({
   POSTGRES_PASSWORD: z.string().default('cybaworld_dev_password'),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().int().positive().default(6379),
+  JWT_SECRET: z.string().default('cybaworld_dev_jwt_secret'),
+  JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   WORLD_SEED_ISO: z.string().default('2200-01-01T00:00:00.000Z'),
   TIME_ACCELERATION: z.coerce.number().int().positive().default(30),
   TICK_INTERVAL_MS: z.coerce.number().int().positive().default(2000),
@@ -30,6 +33,11 @@ export type AppEnv = {
   redis: {
     host: string;
     port: number;
+  };
+  jwt: {
+    secret: string;
+    accessExpiresIn: string;
+    refreshExpiresIn: string;
   };
   simulation: {
     worldSeedMs: number;
@@ -60,6 +68,11 @@ export function loadEnv(): AppEnv {
     redis: {
       host: parsed.REDIS_HOST,
       port: parsed.REDIS_PORT,
+    },
+    jwt: {
+      secret: parsed.JWT_SECRET,
+      accessExpiresIn: parsed.JWT_ACCESS_EXPIRES_IN,
+      refreshExpiresIn: parsed.JWT_REFRESH_EXPIRES_IN,
     },
     simulation: {
       worldSeedMs: new Date(parsed.WORLD_SEED_ISO).getTime(),
