@@ -150,6 +150,21 @@ export interface SkillLevelUpPayload {
   newLevel: number;
 }
 
+export interface ConditionAppliedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+  durationDays: number;
+}
+
+export interface ConditionResolvedPayload {
+  characterId: string;
+  conditionId: string;
+  conditionType: string;
+  severity: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -170,6 +185,8 @@ export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedP
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
 export type SkillLevelUp = DomainEvent<'SkillLevelUp', SkillLevelUpPayload>;
+export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
+export type ConditionResolved = DomainEvent<'ConditionResolved', ConditionResolvedPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -191,7 +208,9 @@ export type KnownDomainEvent =
   | StatsInitialised
   | LifeStageTransition
   | NeedsCriticalWarning
-  | SkillLevelUp;
+  | SkillLevelUp
+  | ConditionApplied
+  | ConditionResolved;
 
 // ── Listener signature ────────────────────────────────────────────
 
