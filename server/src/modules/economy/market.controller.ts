@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { MarketService } from './market.service';
 import { SimulationService } from '../simulation/simulation.service';
 
@@ -25,6 +26,8 @@ export class MarketController {
     private readonly simulationService: SimulationService,
   ) {}
 
+  // Rate limit: 60 listings per hour per IP.
+  @Throttle({ default: { ttl: 3_600_000, limit: 60 } })
   @Post('listings')
   createListing(@Body() body: CreateListingBody) {
     try {

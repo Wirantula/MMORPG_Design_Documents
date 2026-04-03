@@ -11,12 +11,14 @@ import { CharactersModule } from './modules/characters/characters.module';
 import { WorldModule } from './modules/world/world.module';
 import { CurrencyModule } from './modules/currency/currency.module';
 import { NeedsModule } from './modules/needs/needs.module';
+import { SecurityModule } from './modules/security/security.module';
 
 @Module({
   // SharedModule MUST be first — its @Global() providers (DomainEventBus, AppLogger)
   // are then available to every other module without needing explicit imports.
   imports: [
     SharedModule,
+    SecurityModule,
     HealthModule,
     SimulationModule,
     RealtimeModule,
