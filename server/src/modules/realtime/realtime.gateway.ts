@@ -128,7 +128,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     );
   }
 
-  // ── Observability helpers ───────────────────────────────────────
+  // ── Observability helpers ───────────────────────────────────────────
 
   /** Current number of authenticated connections. */
   get connectedClientsCount(): number {
@@ -179,8 +179,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
     } satisfies ServerEventEnvelope<ChatMessagePayload>);
   }
 
-  // ── Client commands ────────────────────────────────────────────
-
+  // ── Client commands ────────────────────────────────────────
   @SubscribeMessage('command')
   handleCommand(@ConnectedSocket() client: Socket, @MessageBody() rawPayload: unknown) {
     const payload = parseCommandEnvelope(rawPayload);

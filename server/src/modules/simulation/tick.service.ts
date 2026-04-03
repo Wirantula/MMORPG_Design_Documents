@@ -17,6 +17,11 @@ export interface OrderMatcher {
   matchOrders(currentGameDay: number): number;
 }
 
+/** Minimal interface so TickService can resolve travel arrivals without a hard import cycle. */
+export interface TravelResolver {
+  resolveArrivals(nowMs: number): unknown[];
+}
+
 export interface TickMetrics {
   tickCount: number;
   lastTickDurationMs: number;
@@ -39,6 +44,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _lastTickExpectedMs = 0;
 
   private orderMatcher: OrderMatcher | null = null;
+  private travelResolver: TravelResolver | null = null;
   private lifecycleService: LifecycleService | null = null;
   private familyService: FamilyService | null = null;
   private needsService: NeedsService | null = null;
@@ -76,8 +82,37 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     this.orderMatcher = matcher;
   }
 
+  /** Injected by TravelModule after bootstrap so there's no hard dependency. */
+  setTravelResolver(resolver: TravelResolver): void {
+    this.travelResolver = resolver;
+  }
+
   onModuleInit(): void {
-    // Default 2 s — overridable via startLoop for testing.
+    // Validate all constructor-injected dependencies before starting the loop.
+    // If any are undefined, DI failed silently (e.g. a module re-registered
+    // DomainEventBus, breaking the SharedModule @Global() singleton).
+    // Log clearly so the root cause can be diagnosed immediately.
+    const missing = [
+      ['simulationService', this.simulationService],
+      ['actionService', this.actionService],
+      ['eventBus', this.eventBus],
+      ['observabilityService', this.observabilityService],
+    ]
+      .filter(([, v]) => v === undefined || v === null)
+      .map(([k]) => k as string);
+
+    if (missing.length > 0) {
+      this.logger.error(
+        `TickService: DI FAILED — the following dependencies are undefined: ${missing.join(', ')}. ` +
+          'Check that no module re-declares DomainEventBus in its own providers ' +
+          '(see AGENTS.md CRITICAL NestJS DI RULE).',
+        'TickService',
+      );
+      // Do not start the loop — a broken tick is worse than no tick.
+      return;
+    }
+
+    // Default 2 s
     this.startLoop(2000);
   }
 
@@ -106,6 +141,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
    * Execute a single simulation tick. Public so tests can call it directly.
    */
   tick(nowMs = Date.now()): void {
+    // Null-guard: if DI failed on startup, abort gracefully instead of crashing.
+    if (!this.simulationService || !this.actionService || !this.observabilityService) {
+      return;
+    }
+
     const tickStart = performance.now();
 
     const gameDay = this.simulationService.getGameDayNumber(nowMs);
@@ -117,6 +157,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     // Run market order matching
     if (this.orderMatcher) {
       this.orderMatcher.matchOrders(gameDay);
+    }
+
+    // Resolve travel arrivals
+    if (this.travelResolver) {
+      this.travelResolver.resolveArrivals(nowMs);
     }
 
     // Detect day change

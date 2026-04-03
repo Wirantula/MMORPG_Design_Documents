@@ -2,7 +2,7 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { SimulationService } from '../simulation/simulation.service';
 
-@Controller('api/characters')
+@Controller('characters')
 export class ConditionsController {
   constructor(
     private readonly healthService: HealthService,
