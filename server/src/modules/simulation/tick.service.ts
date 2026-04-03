@@ -77,6 +77,30 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleInit(): void {
+    // Validate all constructor-injected dependencies before starting the loop.
+    // If any are undefined, DI failed silently (e.g. a module re-registered
+    // DomainEventBus, breaking the SharedModule @Global() singleton).
+    // Log clearly so the root cause can be diagnosed immediately.
+    const missing = [
+      ['simulationService', this.simulationService],
+      ['actionService', this.actionService],
+      ['eventBus', this.eventBus],
+      ['observabilityService', this.observabilityService],
+    ]
+      .filter(([, v]) => v === undefined || v === null)
+      .map(([k]) => k as string);
+
+    if (missing.length > 0) {
+      this.logger.error(
+        `TickService: DI FAILED — the following dependencies are undefined: ${missing.join(', ')}. ` +
+          'Check that no module re-declares DomainEventBus in its own providers ' +
+          '(see AGENTS.md CRITICAL NestJS DI RULE).',
+        'TickService',
+      );
+      // Do not start the loop — a broken tick is worse than no tick.
+      return;
+    }
+
     // Default 2 s — overridable via startLoop for testing.
     this.startLoop(2000);
   }
@@ -106,6 +130,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
    * Execute a single simulation tick. Public so tests can call it directly.
    */
   tick(nowMs = Date.now()): void {
+    // Null-guard: if DI failed on startup, abort gracefully instead of crashing.
+    if (!this.simulationService || !this.actionService || !this.observabilityService) {
+      return;
+    }
+
     const tickStart = performance.now();
 
     const gameDay = this.simulationService.getGameDayNumber(nowMs);
