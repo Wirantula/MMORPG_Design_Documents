@@ -30,6 +30,8 @@ This tracker mirrors the source backlog in `../MMORPG_Backlog_Agentic_Developmen
 - 3.1 websocket gateway scaffold - `active`
 - 3.2 browser shell scaffold - `active`
 - 4.1 world time service scaffold - `active`
+- 13.1 test strategy implementation - `review`
+- 13.3 security and exploit review - `review`
 
 ## Notes
 - Keep detailed story files in `docs/stories/`.
