@@ -71,6 +71,16 @@ export interface ContractBreachedPayload {
   escrowAmount: number;
 }
 
+export interface TravelArrivedPayload {
+  journeyId: string;
+  characterId: string;
+  fromNodeId: string;
+  toNodeId: string;
+  cargoLost: string[];
+  hazardLog: { segment: number; roll: number; outcome: string }[];
+  arrivedAtWorldMs: number;
+}
+
 export interface CurrencyTransferredPayload {
   transactionId: string;
   fromId: string | null;
@@ -129,6 +139,11 @@ export interface StatsInitialisedPayload {
   potentialKeyCount: number;
 }
 
+export interface TraitsRolledPayload {
+  characterId: string;
+  traitBuckets: Record<string, string>; // traitName → weightBucket (low/medium/high), never exact values
+}
+
 export interface LifeStageTransitionPayload {
   characterId: string;
   previousStage: string;
@@ -158,7 +173,6 @@ export interface ConditionResolvedPayload {
   conditionType: string;
   severity: number;
 }
-
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -167,6 +181,7 @@ export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', Offli
 export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type TravelArrived = DomainEvent<'TravelArrived', TravelArrivedPayload>;
 export type CurrencyTransferred = DomainEvent<'CurrencyTransferred', CurrencyTransferredPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
@@ -176,6 +191,7 @@ export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
 export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
 export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
+export type TraitsRolled = DomainEvent<'TraitsRolled', TraitsRolledPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
 export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
@@ -191,6 +207,7 @@ export type KnownDomainEvent =
   | CurrencyTransferred
   | ContractCompleted
   | ContractBreached
+  | TravelArrived
   | EconomyExportCompleted
   | AccountCreated
   | AccountLoggedIn
@@ -199,6 +216,7 @@ export type KnownDomainEvent =
   | ConnectionEstablished
   | ConnectionClosed
   | StatsInitialised
+  | TraitsRolled
   | LifeStageTransition
   | NeedsCriticalWarning
   | ConditionApplied

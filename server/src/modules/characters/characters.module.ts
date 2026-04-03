@@ -6,6 +6,8 @@ import { CharactersService } from './characters.service';
 import { CharactersController, AdminCharactersController } from './characters.controller';
 import { StatService } from './stats/stat.service';
 import { StatController, AdminStatController } from './stats/stat.controller';
+import { TraitService } from './traits/trait.service';
+import { TraitController } from './traits/trait.controller';
 
 @Module({
   controllers: [
@@ -14,8 +16,9 @@ import { StatController, AdminStatController } from './stats/stat.controller';
     AdminCharactersController,
     StatController,
     AdminStatController,
+    TraitController,
   ],
-  providers: [WheelService, BirthService, CharactersService, StatService],
-  exports: [WheelService, BirthService, CharactersService, StatService],
+  providers: [WheelService, BirthService, CharactersService, StatService, TraitService],
+  exports: [WheelService, BirthService, CharactersService, StatService, TraitService],
 })
 export class CharactersModule {}
