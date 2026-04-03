@@ -1,5 +1,5 @@
 # Story 5.1 — Birth and Wheel Generation
-**Epic:** 5 | **Role:** Backend Agent | **Status:** Blocked on 2.2 + 3.2
+**Epic:** 5 | **Role:** Backend Agent | **Status:** review
 
 ## Problem / intent
 New lives begin through a wheel-based creation ritual. The wheel is server-authoritative — players cannot force a perfect outcome.

@@ -1,0 +1,69 @@
+{
+  "wheels": {
+    "race": {
+      "label": "Wheel of Heritage",
+      "outcomes": [
+        { "id": "human",    "label": "Human",    "weight": 30 },
+        { "id": "elf",      "label": "Elf",      "weight": 15 },
+        { "id": "dwarf",    "label": "Dwarf",    "weight": 15 },
+        { "id": "orc",      "label": "Orc",      "weight": 12 },
+        { "id": "fae",      "label": "Fae",      "weight": 8  },
+        { "id": "beastkin", "label": "Beastkin", "weight": 10 },
+        { "id": "undine",   "label": "Undine",   "weight": 5  },
+        { "id": "golem",    "label": "Golem",    "weight": 5  }
+      ]
+    },
+    "aptitude": {
+      "label": "Wheel of Aptitude",
+      "outcomes": [
+        { "id": "physical",    "label": "Physical Prodigy",   "weight": 20 },
+        { "id": "mental",      "label": "Mental Prodigy",     "weight": 20 },
+        { "id": "social",      "label": "Social Natural",     "weight": 15 },
+        { "id": "perceptual",  "label": "Keen Senses",        "weight": 15 },
+        { "id": "spiritual",   "label": "Spiritually Gifted", "weight": 10 },
+        { "id": "economic",    "label": "Born Trader",        "weight": 10 },
+        { "id": "balanced",    "label": "Well-Rounded",       "weight": 10 }
+      ]
+    },
+    "trait": {
+      "label": "Wheel of Temperament",
+      "outcomes": [
+        { "id": "brave",      "label": "Brave",          "weight": 15 },
+        { "id": "cunning",    "label": "Cunning",        "weight": 15 },
+        { "id": "gentle",     "label": "Gentle",         "weight": 15 },
+        { "id": "stubborn",   "label": "Stubborn",       "weight": 12 },
+        { "id": "ambitious",  "label": "Ambitious",      "weight": 12 },
+        { "id": "curious",    "label": "Curious",        "weight": 12 },
+        { "id": "reckless",   "label": "Reckless",       "weight": 10 },
+        { "id": "stoic",      "label": "Stoic",          "weight": 9  }
+      ]
+    },
+    "origin": {
+      "label": "Wheel of Origin",
+      "outcomes": [
+        { "id": "village",    "label": "Village Born",    "weight": 25 },
+        { "id": "city",       "label": "City Raised",     "weight": 20 },
+        { "id": "frontier",   "label": "Frontier Child",  "weight": 15 },
+        { "id": "nomad",      "label": "Nomad Camp",      "weight": 12 },
+        { "id": "temple",     "label": "Temple Ward",     "weight": 10 },
+        { "id": "forest",     "label": "Forest Foundling", "weight": 10 },
+        { "id": "shipborn",   "label": "Shipborn",        "weight": 8  }
+      ]
+    },
+    "omen": {
+      "label": "Wheel of Omen",
+      "optional": true,
+      "outcomes": [
+        { "id": "star_blessed",   "label": "Star-Blessed",      "weight": 10 },
+        { "id": "shadow_touched", "label": "Shadow-Touched",    "weight": 10 },
+        { "id": "twin_souled",    "label": "Twin-Souled",       "weight": 8  },
+        { "id": "storm_child",    "label": "Storm Child",       "weight": 12 },
+        { "id": "dream_walker",   "label": "Dream Walker",      "weight": 10 },
+        { "id": "iron_born",      "label": "Iron-Born",         "weight": 15 },
+        { "id": "none",           "label": "No Omen",           "weight": 35 }
+      ]
+    }
+  },
+  "rerollCooldownMs": 86400000,
+  "rerollCoinCost": 50
+}
