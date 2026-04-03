@@ -14,6 +14,13 @@ interface LogPayload {
 export class AppLogger extends ConsoleLogger {
   private readonly defaultContext = 'CybaWorldServer';
 
+  // Explicit no-arg constructor required so reflect-metadata does not
+  // pick up ConsoleLogger's (string, options?) parameters and cause NestJS
+  // DI to fail with "Cannot read properties of undefined".
+  constructor() {
+    super();
+  }
+
   log(message: unknown, context?: string): void {
     this.write('log', message, context);
   }
