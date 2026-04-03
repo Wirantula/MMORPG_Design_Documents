@@ -11,6 +11,11 @@ import { ObservabilityService } from '../observability/observability.service';
 import type { ServerEventEnvelope } from '../../contracts/message-envelope';
 import type { Server } from 'socket.io';
 
+/** Minimal interface so TickService can call matchOrders without a hard import cycle. */
+export interface OrderMatcher {
+  matchOrders(currentGameDay: number): number;
+}
+
 export interface TickMetrics {
   tickCount: number;
   lastTickDurationMs: number;
@@ -32,6 +37,8 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _driftMs = 0;
   private _lastTickExpectedMs = 0;
 
+  private orderMatcher: OrderMatcher | null = null;
+
   constructor(
     private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
@@ -39,6 +46,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     private readonly actionService: ActionService,
     private readonly observabilityService: ObservabilityService,
   ) {}
+
+  /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
+  setOrderMatcher(matcher: OrderMatcher): void {
+    this.orderMatcher = matcher;
+  }
 
   /** Called by RealtimeGateway once the WS server is ready. */
   setWsServer(server: Server): void {
@@ -82,6 +94,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
 
     // Resolve completed actions
     this.actionService.tickActions(nowMs);
+
+    // Run market order matching
+    if (this.orderMatcher) {
+      this.orderMatcher.matchOrders(gameDay);
+    }
 
     // Detect day change
     const dayChanged = gameDay !== this.lastGameDay && this.lastGameDay >= 0;

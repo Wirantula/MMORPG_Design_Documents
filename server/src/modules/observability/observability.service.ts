@@ -19,6 +19,13 @@ export class ObservabilityService {
     driftMs: 0,
   };
   private offlineRoutinesProcessed = 0;
+  private economyMetrics = {
+    totalTradeCount: 0,
+    activeListings: 0,
+    activeOrders: 0,
+    activeContracts: 0,
+    totalFeesCollected: 0,
+  };
 
   recordSimulationMetrics(metrics: SimulationMetricsSnapshot): void {
     this.simMetrics = metrics;
@@ -34,6 +41,20 @@ export class ObservabilityService {
 
   getOfflineRoutinesProcessed(): number {
     return this.offlineRoutinesProcessed;
+  }
+
+  recordEconomyMetrics(metrics: {
+    totalTradeCount: number;
+    activeListings: number;
+    activeOrders: number;
+    activeContracts: number;
+    totalFeesCollected: number;
+  }): void {
+    this.economyMetrics = metrics;
+  }
+
+  getEconomyMetrics() {
+    return { ...this.economyMetrics };
   }
 
   renderPrometheusMetrics(): string {
@@ -72,6 +93,21 @@ export class ObservabilityService {
       '# HELP cybaworld_offline_routines_processed_total Total offline routine batches processed.',
       '# TYPE cybaworld_offline_routines_processed_total counter',
       `cybaworld_offline_routines_processed_total ${this.offlineRoutinesProcessed}`,
+      '# HELP cybaworld_economy_trade_count Total market trades executed.',
+      '# TYPE cybaworld_economy_trade_count counter',
+      `cybaworld_economy_trade_count ${this.economyMetrics.totalTradeCount}`,
+      '# HELP cybaworld_economy_active_listings Current active market listings.',
+      '# TYPE cybaworld_economy_active_listings gauge',
+      `cybaworld_economy_active_listings ${this.economyMetrics.activeListings}`,
+      '# HELP cybaworld_economy_active_orders Current active buy orders.',
+      '# TYPE cybaworld_economy_active_orders gauge',
+      `cybaworld_economy_active_orders ${this.economyMetrics.activeOrders}`,
+      '# HELP cybaworld_economy_active_contracts Current active contracts.',
+      '# TYPE cybaworld_economy_active_contracts gauge',
+      `cybaworld_economy_active_contracts ${this.economyMetrics.activeContracts}`,
+      '# HELP cybaworld_economy_fees_collected_total Total listing fees collected (sink).',
+      '# TYPE cybaworld_economy_fees_collected_total counter',
+      `cybaworld_economy_fees_collected_total ${this.economyMetrics.totalFeesCollected}`,
       '',
     ].join('\n');
   }

@@ -1,5 +1,5 @@
 # Story 9.3 — Economy Dashboards
-**Epic:** 9 | **Role:** Economy Agent | **Status:** Blocked on 9.1 + 12.1
+**Epic:** 9 | **Role:** Economy Agent | **Status:** In Progress
 
 ## Problem / intent
 Hosts need market and sink/faucet dashboards so the economy can be monitored and balanced.

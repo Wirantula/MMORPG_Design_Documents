@@ -15,7 +15,7 @@ Primary technical blueprint source files:
 - `character-lifecycle` (planned)
 - `simulation` — world clock, tick loop, action engine v1 (Stories 4.1, 4.2)
 - `realtime` — WebSocket gateway with tick broadcast and action command routing
-- `economy-market` (planned)
+- `economy-market` — market listings, orderbook, contracts, dashboards (Stories 9.1, 9.2, 9.3)
 - `inventory-items` (planned)
 - `social-governance` (planned)
 - `moderation-ops` (planned)
