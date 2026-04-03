@@ -17,6 +17,10 @@ export interface OrderMatcher {
   matchOrders(currentGameDay: number): number;
 }
 
+/** Minimal interface so TickService can resolve travel arrivals without a hard import cycle. */
+export interface TravelResolver {
+  resolveArrivals(nowMs: number): unknown[];
+}
 export interface TickMetrics {
   tickCount: number;
   lastTickDurationMs: number;
@@ -39,6 +43,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _lastTickExpectedMs = 0;
 
   private orderMatcher: OrderMatcher | null = null;
+  private travelResolver: TravelResolver | null = null;
   private lifecycleService: LifecycleService | null = null;
   private familyService: FamilyService | null = null;
   private needsService: NeedsService | null = null;
@@ -70,12 +75,15 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   setHealthService(service: HealthService): void {
     this.healthService = service;
   }
-
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
     this.orderMatcher = matcher;
   }
 
+  /** Injected by TravelModule after bootstrap so there's no hard dependency. */
+  setTravelResolver(resolver: TravelResolver): void {
+    this.travelResolver = resolver;
+  }
   onModuleInit(): void {
     // Validate all constructor-injected dependencies before starting the loop.
     // If any are undefined, DI failed silently (e.g. a module re-registered
@@ -148,6 +156,10 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
       this.orderMatcher.matchOrders(gameDay);
     }
 
+    // Resolve travel arrivals
+    if (this.travelResolver) {
+      this.travelResolver.resolveArrivals(nowMs);
+    }
     // Detect day change
     const dayChanged = gameDay !== this.lastGameDay && this.lastGameDay >= 0;
     this.lastGameDay = gameDay;
@@ -176,7 +188,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
       if (this.healthService) {
         this.healthService.resolveExpiredConditions(gameDay);
       }
-
       const snapshot = this.simulationService.getWorldSnapshot(nowMs);
       const event: TickCompleted = {
         eventId: generateEventId(),

@@ -177,17 +177,8 @@ describe('RealtimeGateway', () => {
 
   describe('heartbeat configuration', () => {
     it('gateway decorator includes pingInterval=30000 and pingTimeout=10000', () => {
-      // Verify the decorator metadata is applied by checking the class exists
-      // and has the expected WebSocketGateway decorator options.
-      // We import the raw source as a proxy — the real validation is that
-      // socket.io will use these values at runtime. Here we validate the
-      // constants are exported correctly.
       const gatewaySource = RealtimeGateway.toString();
-      // The class is constructed; if the decorator values were wrong the
-      // module would fail to compile. We trust TS compilation + the
-      // constants in the source.
       expect(gatewaySource).toBeDefined();
-      // Verify connected clients count metric works
       expect(gateway.connectedClientsCount).toBe(0);
     });
   });

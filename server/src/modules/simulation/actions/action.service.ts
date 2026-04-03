@@ -32,7 +32,6 @@ export class ActionService {
   setNeedsService(service: NeedsService): void {
     this.needsService = service;
   }
-
   // ── Commands ──────────────────────────────────────────────────
 
   startAction(characterId: string, definitionId: string, nowMs = Date.now()): ActionResult {
@@ -169,7 +168,6 @@ export class ActionService {
         const needsModifier = this.needsService
           ? this.needsService.getModifier(slot.characterId)
           : 1.0;
-
         const event: ActionResolved = {
           eventId: generateEventId(),
           type: 'ActionResolved',

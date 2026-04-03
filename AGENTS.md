@@ -19,7 +19,6 @@ constructor injections across the application — this causes cryptic undefined 
 To use DomainEventBus in a service, just inject it in the constructor — NestJS resolves it globally.
 Do NOT import SharedModule in your module; AppModule already imports it and the @Global() decorator
 makes its providers available everywhere automatically.
-
 ## Mandatory rules
 1. Do not start implementation of a dependency-bound story before contract approval.
 2. Every merged change must include tests and doc updates.

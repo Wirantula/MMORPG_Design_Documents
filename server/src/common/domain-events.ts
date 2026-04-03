@@ -71,6 +71,16 @@ export interface ContractBreachedPayload {
   escrowAmount: number;
 }
 
+export interface TravelArrivedPayload {
+  journeyId: string;
+  characterId: string;
+  fromNodeId: string;
+  toNodeId: string;
+  cargoLost: string[];
+  hazardLog: { segment: number; roll: number; outcome: string }[];
+  arrivedAtWorldMs: number;
+}
+
 export interface CurrencyTransferredPayload {
   transactionId: string;
   fromId: string | null;
@@ -158,7 +168,6 @@ export interface ConditionResolvedPayload {
   conditionType: string;
   severity: number;
 }
-
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -167,6 +176,7 @@ export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', Offli
 export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type TravelArrived = DomainEvent<'TravelArrived', TravelArrivedPayload>;
 export type CurrencyTransferred = DomainEvent<'CurrencyTransferred', CurrencyTransferredPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
@@ -191,6 +201,7 @@ export type KnownDomainEvent =
   | CurrencyTransferred
   | ContractCompleted
   | ContractBreached
+  | TravelArrived
   | EconomyExportCompleted
   | AccountCreated
   | AccountLoggedIn
