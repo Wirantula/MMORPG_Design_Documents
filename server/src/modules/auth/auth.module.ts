@@ -4,7 +4,6 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AccountsModule } from '../accounts/accounts.module';
-import { DomainEventBus } from '../../common/domain-events';
 import { loadEnv } from '../../config/env';
 
 const env = loadEnv();
@@ -18,7 +17,7 @@ const env = loadEnv();
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard, DomainEventBus],
+  providers: [AuthService, JwtAuthGuard],
   exports: [AuthService, JwtAuthGuard],
 })
 export class AuthModule {}

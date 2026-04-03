@@ -7,8 +7,6 @@ import {
 import { SimulationService } from './simulation.service';
 import { ActionService } from './actions/action.service';
 import { ObservabilityService } from '../observability/observability.service';
-import type { ServerEventEnvelope } from '../../contracts/message-envelope';
-import type { Server } from 'socket.io';
 
 /** Minimal interface so TickService can call matchOrders without a hard import cycle. */
 export interface OrderMatcher {
@@ -28,7 +26,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TickService.name);
   private intervalHandle: ReturnType<typeof setInterval> | null = null;
   private lastGameDay = -1;
-  private wsServer: Server | null = null;
 
   private _tickCount = 0;
   private _lastTickDurationMs = 0;
@@ -49,11 +46,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
     this.orderMatcher = matcher;
-  }
-
-  /** Called by RealtimeGateway once the WS server is ready. */
-  setWsServer(server: Server): void {
-    this.wsServer = server;
   }
 
   onModuleInit(): void {
@@ -121,18 +113,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
         `Game day ${gameDay} completed (drift ${this._driftMs} ms)`,
         'TickService',
       );
-    }
-
-    // Broadcast tick to connected WS clients
-    if (this.wsServer) {
-      const snapshot = this.simulationService.getWorldSnapshot(nowMs);
-      const tickEvent: ServerEventEnvelope = {
-        id: generateEventId(),
-        type: 'tick',
-        timestamp: new Date(nowMs).toISOString(),
-        payload: snapshot,
-      };
-      this.wsServer.emit('event', tickEvent);
     }
 
     // Metrics bookkeeping

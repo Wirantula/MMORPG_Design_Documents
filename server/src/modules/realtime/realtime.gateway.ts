@@ -1,18 +1,15 @@
 import { Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SimulationService } from '../simulation/simulation.service';
-import { TickService } from '../simulation/tick.service';
 import { ActionService } from '../simulation/actions/action.service';
 import { parseCommandEnvelope } from './dto/command.dto';
 import type {
@@ -29,27 +26,16 @@ import type {
     credentials: true,
   },
 })
-export class RealtimeGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
-{
+export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(RealtimeGateway.name);
 
   @WebSocketServer()
   server!: Server;
 
   constructor(
-    private readonly moduleRef: ModuleRef,
     private readonly simulationService: SimulationService,
     private readonly actionService: ActionService,
   ) {}
-
-  afterInit(server: Server): void {
-    // Use ModuleRef to resolve TickService lazily after all modules are
-    // fully initialised, avoiding scope resolution races.
-    const tickService = this.moduleRef.get(TickService, { strict: false });
-    tickService?.setWsServer(server);
-    this.logger.log('WebSocket server initialised', 'RealtimeGateway');
-  }
 
   handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`, 'RealtimeGateway');

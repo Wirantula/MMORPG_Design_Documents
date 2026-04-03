@@ -5,7 +5,6 @@ import { TickService } from '../src/modules/simulation/tick.service';
 import { ActionService } from '../src/modules/simulation/actions/action.service';
 import { ObservabilityService } from '../src/modules/observability/observability.service';
 import { DomainEventBus } from '../src/common/domain-events';
-import { AppLogger } from '../src/common/logger.service';
 import type { ServerEventEnvelope, AckPayload } from '../src/contracts/message-envelope';
 import type { Socket } from 'socket.io';
 
@@ -27,9 +26,7 @@ function createGateway() {
   const actionService = new ActionService(eventBus, simulationService);
   const tickService = new TickService(eventBus, simulationService, actionService, observability);
   tickService.stopLoop();
-  // Provide a mock ModuleRef so afterInit can resolve TickService lazily
-  const mockModuleRef = { get: vi.fn().mockReturnValue(tickService) } as unknown as import('@nestjs/core').ModuleRef;
-  return new RealtimeGateway(mockModuleRef, simulationService, actionService);
+  return new RealtimeGateway(simulationService, actionService);
 }
 
 describe('RealtimeGateway', () => {
@@ -106,7 +103,7 @@ describe('RealtimeGateway', () => {
   describe('handleConnection / handleDisconnect', () => {
     it('logs on connection', () => {
       const gateway = createGateway();
-      const logger = (gateway as unknown as { logger: AppLogger }).logger;
+      const logger = (gateway as unknown as { logger: { log: (...args: unknown[]) => void } }).logger;
       const logSpy = vi.spyOn(logger, 'log');
 
       gateway.handleConnection({ id: 'socket-abc' } as unknown as Socket);
@@ -119,7 +116,7 @@ describe('RealtimeGateway', () => {
 
     it('logs on disconnection', () => {
       const gateway = createGateway();
-      const logger = (gateway as unknown as { logger: AppLogger }).logger;
+      const logger = (gateway as unknown as { logger: { log: (...args: unknown[]) => void } }).logger;
       const logSpy = vi.spyOn(logger, 'log');
 
       gateway.handleDisconnect({ id: 'socket-abc' } as unknown as Socket);
