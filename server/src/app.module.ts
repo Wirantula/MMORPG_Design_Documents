@@ -9,6 +9,7 @@ import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CharactersModule } from './modules/characters/characters.module';
 import { WorldModule } from './modules/world/world.module';
+import { CurrencyModule } from './modules/currency/currency.module';
 
 @Module({
   // SharedModule MUST be first — its @Global() providers (DomainEventBus, AppLogger)
@@ -24,6 +25,7 @@ import { WorldModule } from './modules/world/world.module';
     AuthModule,
     CharactersModule,
     WorldModule,
+    CurrencyModule,
   ],
 })
 export class AppModule {}
