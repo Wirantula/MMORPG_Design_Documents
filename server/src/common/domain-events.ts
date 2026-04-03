@@ -97,6 +97,17 @@ export interface CharacterBornPayload {
   };
 }
 
+export interface ConnectionEstablishedPayload {
+  accountId: string;
+  socketId: string;
+}
+
+export interface ConnectionClosedPayload {
+  accountId: string;
+  socketId: string;
+  reason: string;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -109,6 +120,8 @@ export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', Econo
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
+export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
+export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -122,7 +135,9 @@ export type KnownDomainEvent =
   | EconomyExportCompleted
   | AccountCreated
   | AccountLoggedIn
-  | CharacterBorn;
+  | CharacterBorn
+  | ConnectionEstablished
+  | ConnectionClosed;
 
 // ── Listener signature ────────────────────────────────────────────
 
