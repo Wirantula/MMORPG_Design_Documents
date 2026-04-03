@@ -77,6 +77,14 @@ export interface EconomyExportCompletedPayload {
   gameDay: number;
 }
 
+export interface AccountCreatedPayload {
+  accountId: string;
+}
+
+export interface AccountLoggedInPayload {
+  accountId: string;
+}
+
 export interface CharacterBornPayload {
   accountId: string;
   characterId: string;
@@ -98,6 +106,8 @@ export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTrade
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
+export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
+export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
 
 export type KnownDomainEvent =
@@ -110,6 +120,8 @@ export type KnownDomainEvent =
   | ContractCompleted
   | ContractBreached
   | EconomyExportCompleted
+  | AccountCreated
+  | AccountLoggedIn
   | CharacterBorn;
 
 // ── Listener signature ────────────────────────────────────────────

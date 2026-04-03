@@ -10,7 +10,7 @@ This tracker mirrors the source backlog in `../MMORPG_Backlog_Agentic_Developmen
 
 ## Epic status board
 - Epic 1 Foundation and repository governance - `active`
-- Epic 2 Accounts, auth and session model - `todo`
+- Epic 2 Accounts, auth and session model - `active` (2.1 in review)
 - Epic 3 Realtime transport and client shell - `active`
 - Epic 4 World clock and simulation core - `active` (4.3 in review)
 - Epic 5 Character lifecycle and hidden-potential model - `active` (5.1 in review)
