@@ -7,6 +7,8 @@ import {
 import { SimulationService } from './simulation.service';
 import { ActionService } from './actions/action.service';
 import { ObservabilityService } from '../observability/observability.service';
+import { LifecycleService } from '../characters/lifecycle/lifecycle.service';
+import { FamilyService } from './family/family.service';
 import type { ServerEventEnvelope } from '../../contracts/message-envelope';
 import type { Server } from 'socket.io';
 
@@ -38,6 +40,8 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _lastTickExpectedMs = 0;
 
   private orderMatcher: OrderMatcher | null = null;
+  private lifecycleService: LifecycleService | null = null;
+  private familyService: FamilyService | null = null;
 
   constructor(
     private readonly eventBus: DomainEventBus,
@@ -45,6 +49,16 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     private readonly actionService: ActionService,
     private readonly observabilityService: ObservabilityService,
   ) {}
+
+  /** Injected after bootstrap so there's no hard dependency. */
+  setLifecycleService(service: LifecycleService): void {
+    this.lifecycleService = service;
+  }
+
+  /** Injected after bootstrap so there's no hard dependency. */
+  setFamilyService(service: FamilyService): void {
+    this.familyService = service;
+  }
 
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
@@ -104,6 +118,20 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     this.lastGameDay = gameDay;
 
     if (dayChanged) {
+      // Process life-stage transitions
+      if (this.lifecycleService) {
+        this.lifecycleService.processCharacterLifecycles(gameDay);
+      }
+
+      // Resolve family NPC support for protected characters
+      if (this.familyService && this.lifecycleService) {
+        const lc = this.lifecycleService;
+        this.familyService.resolveFamilySupport(
+          gameDay,
+          (characterId) => lc.getCharacter(characterId)?.currentStage,
+        );
+      }
+
       const snapshot = this.simulationService.getWorldSnapshot(nowMs);
       const event: TickCompleted = {
         eventId: generateEventId(),
