@@ -112,6 +112,17 @@ export interface CharacterDiedPayload {
   reason: string;
 }
 
+export interface ConnectionEstablishedPayload {
+  accountId: string;
+  socketId: string;
+}
+
+export interface ConnectionClosedPayload {
+  accountId: string;
+  socketId: string;
+  reason: string;
+}
+
 export interface StatsInitialisedPayload {
   characterId: string;
   statFamilyCount: number;
@@ -123,6 +134,13 @@ export interface LifeStageTransitionPayload {
   previousStage: string;
   newStage: string;
   ageInGameYears: number;
+  gameDay: number;
+}
+
+export interface NeedsCriticalWarningPayload {
+  characterId: string;
+  dimension: string;
+  value: number;
   gameDay: number;
 }
 
@@ -140,8 +158,11 @@ export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
 export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
+export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
+export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
+export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -158,8 +179,11 @@ export type KnownDomainEvent =
   | AccountLoggedIn
   | CharacterBorn
   | CharacterDied
+  | ConnectionEstablished
+  | ConnectionClosed
   | StatsInitialised
-  | LifeStageTransition;
+  | LifeStageTransition
+  | NeedsCriticalWarning;
 
 // ── Listener signature ────────────────────────────────────────────
 

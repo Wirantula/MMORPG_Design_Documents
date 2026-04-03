@@ -9,6 +9,7 @@ import { ActionService } from './actions/action.service';
 import { ObservabilityService } from '../observability/observability.service';
 import type { LifecycleService } from '../characters/lifecycle/lifecycle.service';
 import type { FamilyService } from './family/family.service';
+import type { NeedsService } from '../needs/needs.service';
 
 /** Minimal interface so TickService can call matchOrders without a hard import cycle. */
 export interface OrderMatcher {
@@ -39,6 +40,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private orderMatcher: OrderMatcher | null = null;
   private lifecycleService: LifecycleService | null = null;
   private familyService: FamilyService | null = null;
+  private needsService: NeedsService | null = null;
 
   constructor(
     private readonly eventBus: DomainEventBus,
@@ -55,6 +57,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   /** Injected after bootstrap so there's no hard dependency. */
   setFamilyService(service: FamilyService): void {
     this.familyService = service;
+  }
+
+  /** Injected after bootstrap so there's no hard dependency. */
+  setNeedsService(service: NeedsService): void {
+    this.needsService = service;
   }
 
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
@@ -122,6 +129,11 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
           gameDay,
           (characterId: string) => lc.getCharacter(characterId)?.currentStage,
         );
+      }
+
+      // Decay character needs daily
+      if (this.needsService) {
+        this.needsService.decayNeeds(gameDay);
       }
 
       const snapshot = this.simulationService.getWorldSnapshot(nowMs);
