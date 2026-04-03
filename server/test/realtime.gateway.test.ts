@@ -1,6 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 import { RealtimeGateway } from '../src/modules/realtime/realtime.gateway';
 import { SimulationService } from '../src/modules/simulation/simulation.service';
+import { TickService } from '../src/modules/simulation/tick.service';
+import { ActionService } from '../src/modules/simulation/actions/action.service';
+import { DomainEventBus } from '../src/common/domain-events';
+import { ObservabilityService } from '../src/modules/observability/observability.service';
 import { AppLogger } from '../src/common/logger.service';
 import type { ServerEventEnvelope, AckPayload } from '../src/contracts/message-envelope';
 import type { Socket } from 'socket.io';
@@ -20,8 +24,13 @@ function createGateway() {
   const logger = new AppLogger();
   // Suppress log output during tests
   vi.spyOn(logger, 'log').mockImplementation(() => {});
+  const eventBus = new DomainEventBus();
   const simulationService = new SimulationService();
-  return new RealtimeGateway(logger, simulationService);
+  const observability = new ObservabilityService();
+  const actionService = new ActionService(logger, eventBus, simulationService);
+  const tickService = new TickService(logger, eventBus, simulationService, actionService, observability);
+  tickService.stopLoop();
+  return new RealtimeGateway(logger, simulationService, tickService, actionService);
 }
 
 describe('RealtimeGateway', () => {
