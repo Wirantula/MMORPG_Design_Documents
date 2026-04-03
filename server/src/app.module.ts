@@ -6,10 +6,23 @@ import { AppLogger } from './common/logger.service';
 import { DomainEventBus } from './common/domain-events';
 import { ObservabilityModule } from './modules/observability/observability.module';
 import { EconomyModule } from './modules/economy/economy.module';
+import { AccountsModule } from './modules/accounts/accounts.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { CharactersModule } from './modules/characters/characters.module';
 import { WorldModule } from './modules/world/world.module';
 
 @Module({
-  imports: [HealthModule, SimulationModule, RealtimeModule, ObservabilityModule, EconomyModule, WorldModule],
+  imports: [
+    HealthModule,
+    SimulationModule,
+    RealtimeModule,
+    ObservabilityModule,
+    EconomyModule,
+    AccountsModule,
+    AuthModule,
+    CharactersModule,
+    WorldModule,
+  ],
   providers: [AppLogger, DomainEventBus],
   exports: [AppLogger, DomainEventBus],
 })
