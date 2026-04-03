@@ -1,4 +1,4 @@
-export type ClientCommandType = 'ping' | 'action.submit' | 'action.cancel' | 'chat.send';
+export type ClientCommandType = 'ping' | 'action.submit' | 'action.cancel' | 'chat.send' | 'character.get';
 export type ServerEventType =
   | 'ack'
   | 'error'
@@ -6,7 +6,10 @@ export type ServerEventType =
   | 'world.snapshot'
   | 'action.started'
   | 'action.resolved'
-  | 'action.cancelled';
+  | 'action.cancelled'
+  | 'character.update'
+  | 'notification.new'
+  | 'chat.message';
 
 export interface Envelope<TType extends string, TPayload = unknown> {
   id: string;
@@ -46,4 +49,26 @@ export interface ActionCancelledPayload {
   characterId: string;
   definitionId: string;
   cancelledAtWorldUtc: string;
+}
+
+export interface CharacterUpdatePayload {
+  characterId: string;
+  changes: Record<string, unknown>;
+}
+
+export interface NotificationNewPayload {
+  targetAccountId: string;
+  title: string;
+  body: string;
+  category?: string;
+}
+
+export interface ChatMessagePayload {
+  senderId: string;
+  channel: string;
+  message: string;
+}
+
+export interface CharacterGetPayload {
+  characterId: string;
 }
