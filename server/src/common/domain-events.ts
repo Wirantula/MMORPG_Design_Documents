@@ -159,6 +159,12 @@ export interface NeedsCriticalWarningPayload {
   gameDay: number;
 }
 
+export interface SkillLevelUpPayload {
+  characterId: string;
+  skill: string;
+  newLevel: number;
+}
+
 export interface ConditionAppliedPayload {
   characterId: string;
   conditionId: string;
@@ -173,6 +179,7 @@ export interface ConditionResolvedPayload {
   conditionType: string;
   severity: number;
 }
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -194,6 +201,7 @@ export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedP
 export type TraitsRolled = DomainEvent<'TraitsRolled', TraitsRolledPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
+export type SkillLevelUp = DomainEvent<'SkillLevelUp', SkillLevelUpPayload>;
 export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
 export type ConditionResolved = DomainEvent<'ConditionResolved', ConditionResolvedPayload>;
 
@@ -219,6 +227,7 @@ export type KnownDomainEvent =
   | TraitsRolled
   | LifeStageTransition
   | NeedsCriticalWarning
+  | SkillLevelUp
   | ConditionApplied
   | ConditionResolved;
 

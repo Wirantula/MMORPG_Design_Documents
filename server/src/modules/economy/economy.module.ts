@@ -6,6 +6,7 @@ import { ContractsController } from './contracts/contracts.controller';
 import { DashboardService } from './dashboards/dashboard.service';
 import { DashboardController } from './dashboards/dashboard.controller';
 import { SimulationModule } from '../simulation/simulation.module';
+
 @Module({
   imports: [SimulationModule],
   controllers: [MarketController, ContractsController, DashboardController],
