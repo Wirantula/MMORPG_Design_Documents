@@ -21,15 +21,15 @@ function createMockSocket() {
 }
 
 function createGateway() {
-  const logger = new AppLogger();
-  // Suppress log output during tests
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
   const simulationService = new SimulationService();
   const observability = new ObservabilityService();
   const actionService = new ActionService(eventBus, simulationService);
   const tickService = new TickService(eventBus, simulationService, actionService, observability);
-  return new RealtimeGateway(simulationService, tickService, actionService);
+  tickService.stopLoop();
+  // Provide a mock ModuleRef so afterInit can resolve TickService lazily
+  const mockModuleRef = { get: vi.fn().mockReturnValue(tickService) } as unknown as import('@nestjs/core').ModuleRef;
+  return new RealtimeGateway(mockModuleRef, simulationService, actionService);
 }
 
 describe('RealtimeGateway', () => {

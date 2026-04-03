@@ -1,4 +1,5 @@
 import { Logger } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import {
   ConnectedSocket,
   MessageBody,
@@ -37,14 +38,17 @@ export class RealtimeGateway
   server!: Server;
 
   constructor(
+    private readonly moduleRef: ModuleRef,
     private readonly simulationService: SimulationService,
-    private readonly tickService: TickService,
     private readonly actionService: ActionService,
   ) {}
 
   afterInit(server: Server): void {
-    this.tickService.setWsServer(server);
-    this.logger.log('WebSocket server initialised and passed to TickService', 'RealtimeGateway');
+    // Use ModuleRef to resolve TickService lazily after all modules are
+    // fully initialised, avoiding scope resolution races.
+    const tickService = this.moduleRef.get(TickService, { strict: false });
+    tickService?.setWsServer(server);
+    this.logger.log('WebSocket server initialised', 'RealtimeGateway');
   }
 
   handleConnection(client: Socket): void {
