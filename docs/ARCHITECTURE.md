@@ -13,8 +13,8 @@ Primary technical blueprint source files:
 ## Module boundaries (initial)
 - `auth-accounts` (planned)
 - `character-lifecycle` (planned)
-- `simulation` (seeded)
-- `realtime` (seeded)
+- `simulation` — world clock, tick loop, action engine v1 (Stories 4.1, 4.2)
+- `realtime` — WebSocket gateway with tick broadcast and action command routing
 - `economy-market` (planned)
 - `inventory-items` (planned)
 - `social-governance` (planned)

@@ -3,6 +3,7 @@ import {
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
@@ -10,8 +11,15 @@ import {
 import { Server, Socket } from 'socket.io';
 import { AppLogger } from '../../common/logger.service';
 import { SimulationService } from '../simulation/simulation.service';
+import { TickService } from '../simulation/tick.service';
+import { ActionService } from '../simulation/actions/action.service';
 import { parseCommandEnvelope } from './dto/command.dto';
-import type { AckPayload, ServerEventEnvelope } from '../../contracts/message-envelope';
+import type {
+  AckPayload,
+  ActionStartedPayload,
+  ActionCancelledPayload,
+  ServerEventEnvelope,
+} from '../../contracts/message-envelope';
 
 @WebSocketGateway({
   path: '/ws',
@@ -20,14 +28,23 @@ import type { AckPayload, ServerEventEnvelope } from '../../contracts/message-en
     credentials: true,
   },
 })
-export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class RealtimeGateway
+  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
+{
   @WebSocketServer()
   server!: Server;
 
   constructor(
     private readonly logger: AppLogger,
     private readonly simulationService: SimulationService,
+    private readonly tickService: TickService,
+    private readonly actionService: ActionService,
   ) {}
+
+  afterInit(server: Server): void {
+    this.tickService.setWsServer(server);
+    this.logger.log('WebSocket server initialised and passed to TickService', 'RealtimeGateway');
+  }
 
   handleConnection(client: Socket): void {
     this.logger.log(`Client connected: ${client.id}`, 'RealtimeGateway');
@@ -40,23 +57,99 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
   @SubscribeMessage('command')
   handleCommand(@ConnectedSocket() client: Socket, @MessageBody() rawPayload: unknown) {
     const payload = parseCommandEnvelope(rawPayload);
+    const nowMs = Date.now();
 
+    // Send ack for every command
     const ack: ServerEventEnvelope<AckPayload> = {
       id: payload.id,
       type: 'ack',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date(nowMs).toISOString(),
       payload: {
         ok: true,
         receivedType: payload.type,
       },
     };
-
     client.emit('event', ack);
-    client.emit('event', {
-      id: `${payload.id}:snapshot`,
-      type: 'world.snapshot',
-      timestamp: new Date().toISOString(),
-      payload: this.simulationService.getWorldSnapshot(),
-    } satisfies ServerEventEnvelope);
+
+    // Route by command type
+    switch (payload.type) {
+      case 'action.submit': {
+        const body = payload.payload as { characterId?: string; definitionId?: string } | undefined;
+        const characterId = body?.characterId ?? client.id;
+        const definitionId = body?.definitionId;
+        if (!definitionId) {
+          client.emit('event', {
+            id: `${payload.id}:error`,
+            type: 'error',
+            timestamp: new Date(nowMs).toISOString(),
+            payload: { message: 'Missing definitionId in action.submit payload' },
+          } satisfies ServerEventEnvelope);
+          return;
+        }
+
+        const result = this.actionService.startAction(characterId, definitionId, nowMs);
+        if (!result.ok) {
+          client.emit('event', {
+            id: `${payload.id}:error`,
+            type: 'error',
+            timestamp: new Date(nowMs).toISOString(),
+            payload: { message: result.error },
+          } satisfies ServerEventEnvelope);
+          return;
+        }
+
+        const slot = result.slot!;
+        client.emit('event', {
+          id: `${payload.id}:action.started`,
+          type: 'action.started',
+          timestamp: new Date(nowMs).toISOString(),
+          payload: {
+            characterId: slot.characterId,
+            definitionId: slot.definitionId,
+            startedAtWorldUtc: new Date(slot.startedAtWorldMs).toISOString(),
+            endsAtWorldUtc: new Date(slot.endsAtWorldMs).toISOString(),
+          } satisfies ActionStartedPayload,
+        } satisfies ServerEventEnvelope<ActionStartedPayload>);
+        return;
+      }
+
+      case 'action.cancel': {
+        const body = payload.payload as { characterId?: string } | undefined;
+        const characterId = body?.characterId ?? client.id;
+        const result = this.actionService.cancelAction(characterId, nowMs);
+        if (!result.ok) {
+          client.emit('event', {
+            id: `${payload.id}:error`,
+            type: 'error',
+            timestamp: new Date(nowMs).toISOString(),
+            payload: { message: result.error },
+          } satisfies ServerEventEnvelope);
+          return;
+        }
+
+        const slot = result.slot!;
+        client.emit('event', {
+          id: `${payload.id}:action.cancelled`,
+          type: 'action.cancelled',
+          timestamp: new Date(nowMs).toISOString(),
+          payload: {
+            characterId: slot.characterId,
+            definitionId: slot.definitionId,
+            cancelledAtWorldUtc: new Date(nowMs).toISOString(),
+          } satisfies ActionCancelledPayload,
+        } satisfies ServerEventEnvelope<ActionCancelledPayload>);
+        return;
+      }
+
+      default: {
+        // Ping and other commands get a world snapshot
+        client.emit('event', {
+          id: `${payload.id}:snapshot`,
+          type: 'world.snapshot',
+          timestamp: new Date(nowMs).toISOString(),
+          payload: this.simulationService.getWorldSnapshot(nowMs),
+        } satisfies ServerEventEnvelope);
+      }
+    }
   }
 }
