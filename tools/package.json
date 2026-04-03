@@ -5,5 +5,8 @@
   "type": "module",
   "scripts": {
     "create-story": "node ./scripts/create-story.mjs"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
   }
 }
