@@ -8,6 +8,7 @@ import { ObservabilityModule } from './modules/observability/observability.modul
 import { EconomyModule } from './modules/economy/economy.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CharactersModule } from './modules/characters/characters.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './modules/auth/auth.module';
     EconomyModule,
     AccountsModule,
     AuthModule,
+    CharactersModule,
   ],
   providers: [AppLogger, DomainEventBus],
   exports: [AppLogger, DomainEventBus],

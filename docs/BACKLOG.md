@@ -13,7 +13,7 @@ This tracker mirrors the source backlog in `../MMORPG_Backlog_Agentic_Developmen
 - Epic 2 Accounts, auth and session model - `active` (2.1 in review)
 - Epic 3 Realtime transport and client shell - `active`
 - Epic 4 World clock and simulation core - `active` (4.3 in review)
-- Epic 5 Character lifecycle and hidden-potential model - `todo`
+- Epic 5 Character lifecycle and hidden-potential model - `active` (5.1 in review)
 - Epic 6 Progression and skill systems - `todo`
 - Epic 7 Needs, health and life-sim loops - `todo`
 - Epic 8 Items, crafting and production - `todo`
@@ -28,7 +28,7 @@ This tracker mirrors the source backlog in `../MMORPG_Backlog_Agentic_Developmen
 - 1.2 CI and quality gates - `active`
 - 1.3 observability baseline - `active`
 - 3.1 websocket gateway scaffold - `active`
-- 3.2 browser shell scaffold - `active`
+- 3.2 browser shell scaffold - `review`
 - 4.1 world time service scaffold - `active`
 - 13.1 test strategy implementation - `review`
 - 13.3 security and exploit review - `review`

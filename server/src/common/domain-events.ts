@@ -85,6 +85,18 @@ export interface AccountLoggedInPayload {
   accountId: string;
 }
 
+export interface CharacterBornPayload {
+  accountId: string;
+  characterId: string;
+  wheelOutcomes: {
+    race: string;
+    aptitude: string;
+    trait: string;
+    origin: string;
+    omen?: string;
+  };
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -96,6 +108,7 @@ export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedP
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
+export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -108,7 +121,8 @@ export type KnownDomainEvent =
   | ContractBreached
   | EconomyExportCompleted
   | AccountCreated
-  | AccountLoggedIn;
+  | AccountLoggedIn
+  | CharacterBorn;
 
 // ── Listener signature ────────────────────────────────────────────
 
