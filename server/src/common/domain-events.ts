@@ -106,6 +106,12 @@ export interface CharacterBornPayload {
   };
 }
 
+export interface CharacterDiedPayload {
+  accountId: string;
+  characterId: string;
+  reason: string;
+}
+
 export interface StatsInitialisedPayload {
   characterId: string;
   statFamilyCount: number;
@@ -133,6 +139,7 @@ export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', Econo
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
+export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 
@@ -150,6 +157,7 @@ export type KnownDomainEvent =
   | AccountCreated
   | AccountLoggedIn
   | CharacterBorn
+  | CharacterDied
   | StatsInitialised
   | LifeStageTransition;
 
