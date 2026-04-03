@@ -31,6 +31,7 @@ import type {
 const HEARTBEAT_INTERVAL_MS = 30_000;
 /** Max time to wait for a pong response before disconnecting. */
 const PONG_TIMEOUT_MS = 10_000;
+
 @WebSocketGateway({
   path: '/ws',
   cors: {
@@ -45,6 +46,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
 
   /** Map of socket.id → authenticated account ID. */
   private readonly socketToAccount = new Map<string, string>();
+
   @WebSocketServer()
   server!: Server;
 
@@ -308,6 +310,7 @@ export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect
         } satisfies ServerEventEnvelope);
         return;
       }
+
       default: {
         // Ping and other commands get a world snapshot
         client.emit('event', {

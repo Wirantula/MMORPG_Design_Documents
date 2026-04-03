@@ -21,6 +21,7 @@ export interface OrderMatcher {
 export interface TravelResolver {
   resolveArrivals(nowMs: number): unknown[];
 }
+
 export interface TickMetrics {
   tickCount: number;
   lastTickDurationMs: number;
@@ -75,6 +76,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   setHealthService(service: HealthService): void {
     this.healthService = service;
   }
+
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
     this.orderMatcher = matcher;
@@ -84,6 +86,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   setTravelResolver(resolver: TravelResolver): void {
     this.travelResolver = resolver;
   }
+
   onModuleInit(): void {
     // Validate all constructor-injected dependencies before starting the loop.
     // If any are undefined, DI failed silently (e.g. a module re-registered
@@ -109,7 +112,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
       return;
     }
 
-    // Default 2 s — overridable via startLoop for testing.
+    // Default 2 s
     this.startLoop(2000);
   }
 
@@ -160,6 +163,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     if (this.travelResolver) {
       this.travelResolver.resolveArrivals(nowMs);
     }
+
     // Detect day change
     const dayChanged = gameDay !== this.lastGameDay && this.lastGameDay >= 0;
     this.lastGameDay = gameDay;
@@ -188,6 +192,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
       if (this.healthService) {
         this.healthService.resolveExpiredConditions(gameDay);
       }
+
       const snapshot = this.simulationService.getWorldSnapshot(nowMs);
       const event: TickCompleted = {
         eventId: generateEventId(),

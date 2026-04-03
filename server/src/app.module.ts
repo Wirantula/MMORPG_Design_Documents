@@ -12,6 +12,7 @@ import { WorldModule } from './modules/world/world.module';
 import { CurrencyModule } from './modules/currency/currency.module';
 import { NeedsModule } from './modules/needs/needs.module';
 import { SecurityModule } from './modules/security/security.module';
+import { ProgressionModule } from './modules/progression/progression.module';
 import { TravelModule } from './modules/travel/travel.module';
 
 @Module({
@@ -31,6 +32,7 @@ import { TravelModule } from './modules/travel/travel.module';
     WorldModule,
     CurrencyModule,
     NeedsModule,
+    ProgressionModule,
     TravelModule,
   ],
 })
