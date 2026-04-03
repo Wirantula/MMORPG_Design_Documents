@@ -5,4 +5,7 @@ export default defineConfig({
     include: ['test/**/*.test.ts'],
     environment: 'node',
   },
+  server: {
+    host: '127.0.0.1',
+  },
 });

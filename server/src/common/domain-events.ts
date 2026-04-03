@@ -1,0 +1,85 @@
+import { Injectable } from '@nestjs/common';
+
+// ── Canonical domain event types ──────────────────────────────────
+
+export interface DomainEvent<TType extends string = string, TPayload = unknown> {
+  eventId: string;
+  type: TType;
+  timestamp: string;
+  payload: TPayload;
+}
+
+export interface TickCompletedPayload {
+  gameDay: number;
+  worldUtc: string;
+  realtimeUtc: string;
+  driftMs: number;
+}
+
+export interface ActionSubmittedPayload {
+  characterId: string;
+  definitionId: string;
+  startedAtWorldMs: number;
+  endsAtWorldMs: number;
+}
+
+export interface ActionResolvedPayload {
+  characterId: string;
+  definitionId: string;
+  completedAtWorldMs: number;
+  rewards: Record<string, unknown>;
+}
+
+export interface ActionCancelledPayload {
+  characterId: string;
+  definitionId: string;
+  cancelledAtWorldMs: number;
+}
+
+export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
+export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
+export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
+export type ActionCancelled = DomainEvent<'ActionCancelled', ActionCancelledPayload>;
+
+export type KnownDomainEvent = TickCompleted | ActionSubmitted | ActionResolved | ActionCancelled;
+
+// ── Listener signature ────────────────────────────────────────────
+
+type Listener<T extends KnownDomainEvent = KnownDomainEvent> = (event: T) => void;
+
+// ── In-process event bus ──────────────────────────────────────────
+
+let counter = 0;
+
+export function generateEventId(): string {
+  counter += 1;
+  return `evt_${Date.now()}_${counter}`;
+}
+
+@Injectable()
+export class DomainEventBus {
+  private readonly listeners = new Map<string, Listener[]>();
+
+  on<T extends KnownDomainEvent>(type: T['type'], listener: Listener<T>): void {
+    const existing = this.listeners.get(type) ?? [];
+    existing.push(listener as Listener);
+    this.listeners.set(type, existing);
+  }
+
+  off<T extends KnownDomainEvent>(type: T['type'], listener: Listener<T>): void {
+    const existing = this.listeners.get(type);
+    if (!existing) return;
+    this.listeners.set(
+      type,
+      existing.filter((l) => l !== listener),
+    );
+  }
+
+  emit<T extends KnownDomainEvent>(event: T): void {
+    const existing = this.listeners.get(event.type);
+    if (!existing) return;
+    for (const listener of existing) {
+      listener(event);
+    }
+  }
+}

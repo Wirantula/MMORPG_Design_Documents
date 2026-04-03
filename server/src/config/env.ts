@@ -11,6 +11,9 @@ const envSchema = z.object({
   POSTGRES_PASSWORD: z.string().default('cybaworld_dev_password'),
   REDIS_HOST: z.string().default('localhost'),
   REDIS_PORT: z.coerce.number().int().positive().default(6379),
+  WORLD_SEED_ISO: z.string().default('2200-01-01T00:00:00.000Z'),
+  TIME_ACCELERATION: z.coerce.number().int().positive().default(30),
+  TICK_INTERVAL_MS: z.coerce.number().int().positive().default(2000),
 });
 
 export type AppEnv = {
@@ -27,6 +30,11 @@ export type AppEnv = {
   redis: {
     host: string;
     port: number;
+  };
+  simulation: {
+    worldSeedMs: number;
+    acceleration: number;
+    tickIntervalMs: number;
   };
 };
 
@@ -52,6 +60,11 @@ export function loadEnv(): AppEnv {
     redis: {
       host: parsed.REDIS_HOST,
       port: parsed.REDIS_PORT,
+    },
+    simulation: {
+      worldSeedMs: new Date(parsed.WORLD_SEED_ISO).getTime(),
+      acceleration: parsed.TIME_ACCELERATION,
+      tickIntervalMs: parsed.TICK_INTERVAL_MS,
     },
   };
 
