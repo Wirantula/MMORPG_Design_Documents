@@ -139,6 +139,11 @@ export interface StatsInitialisedPayload {
   potentialKeyCount: number;
 }
 
+export interface TraitsRolledPayload {
+  characterId: string;
+  traitBuckets: Record<string, string>; // traitName → weightBucket (low/medium/high), never exact values
+}
+
 export interface LifeStageTransitionPayload {
   characterId: string;
   previousStage: string;
@@ -186,6 +191,7 @@ export type CharacterDied = DomainEvent<'CharacterDied', CharacterDiedPayload>;
 export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
 export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
 export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
+export type TraitsRolled = DomainEvent<'TraitsRolled', TraitsRolledPayload>;
 export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCriticalWarningPayload>;
 export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
@@ -210,6 +216,7 @@ export type KnownDomainEvent =
   | ConnectionEstablished
   | ConnectionClosed
   | StatsInitialised
+  | TraitsRolled
   | LifeStageTransition
   | NeedsCriticalWarning
   | ConditionApplied
