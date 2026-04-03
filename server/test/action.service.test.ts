@@ -2,16 +2,12 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { ActionService } from '../src/modules/simulation/actions/action.service';
 import { SimulationService } from '../src/modules/simulation/simulation.service';
 import { DomainEventBus } from '../src/common/domain-events';
-import { AppLogger } from '../src/common/logger.service';
 
 function createService() {
-  const logger = new AppLogger();
-  // Silence logs during tests
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
   const simulation = new SimulationService({ acceleration: 30 });
-  const actionService = new ActionService(logger, eventBus, simulation);
-  return { actionService, eventBus, simulation, logger };
+  const actionService = new ActionService(eventBus, simulation);
+  return { actionService, eventBus, simulation };
 }
 
 describe('ActionService', () => {

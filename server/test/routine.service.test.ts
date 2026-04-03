@@ -3,17 +3,14 @@ import { RoutineService } from '../src/modules/simulation/routines/routine.servi
 import { SimulationService } from '../src/modules/simulation/simulation.service';
 import { ObservabilityService } from '../src/modules/observability/observability.service';
 import { DomainEventBus } from '../src/common/domain-events';
-import { AppLogger } from '../src/common/logger.service';
 import type { CharacterOfflineState } from '../src/modules/simulation/routines/routine.types';
 
 function createService() {
-  const logger = new AppLogger();
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
   const simulation = new SimulationService({ acceleration: 30 });
   const observability = new ObservabilityService();
-  const routineService = new RoutineService(logger, eventBus, simulation, observability);
-  return { routineService, eventBus, simulation, observability, logger };
+  const routineService = new RoutineService(eventBus, simulation, observability);
+  return { routineService, eventBus, simulation, observability };
 }
 
 function makeOfflineState(overrides: Partial<CharacterOfflineState> = {}): CharacterOfflineState {

@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { AppLogger } from '../../../common/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   DomainEventBus,
   generateEventId,
@@ -36,8 +35,9 @@ export class RoutineService {
   /** In-memory per-character offline state. Will move to persistence later. */
   private readonly offlineStates = new Map<string, CharacterOfflineState>();
 
+  private readonly logger = new Logger(RoutineService.name);
+
   constructor(
-    private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
     private readonly simulationService: SimulationService,
     private readonly observabilityService: ObservabilityService,

@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { AppLogger } from '../../../common/logger.service';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   DomainEventBus,
   generateEventId,
@@ -19,10 +18,10 @@ export interface ActionResult {
 
 @Injectable()
 export class ActionService {
+  private readonly logger = new Logger(ActionService.name);
   private readonly queue = new ActionQueue();
 
   constructor(
-    private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
     private readonly simulationService: SimulationService,
   ) {}

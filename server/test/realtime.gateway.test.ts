@@ -27,8 +27,8 @@ function createGateway() {
   const eventBus = new DomainEventBus();
   const simulationService = new SimulationService();
   const observability = new ObservabilityService();
-  const actionService = new ActionService(logger, eventBus, simulationService);
-  const tickService = new TickService(logger, eventBus, simulationService, actionService, observability);
+  const actionService = new ActionService(eventBus, simulationService);
+  const tickService = new TickService(eventBus, simulationService, actionService, observability);
   return new RealtimeGateway(logger, simulationService, tickService, actionService);
 }
 

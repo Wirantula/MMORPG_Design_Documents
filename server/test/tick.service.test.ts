@@ -4,21 +4,18 @@ import { SimulationService } from '../src/modules/simulation/simulation.service'
 import { ActionService } from '../src/modules/simulation/actions/action.service';
 import { DomainEventBus } from '../src/common/domain-events';
 import { ObservabilityService } from '../src/modules/observability/observability.service';
-import { AppLogger } from '../src/common/logger.service';
 
 function createTickService() {
-  const logger = new AppLogger();
-  vi.spyOn(logger, 'log').mockImplementation(() => {});
   const eventBus = new DomainEventBus();
   const simulation = new SimulationService({ acceleration: 30 });
   const observability = new ObservabilityService();
-  const actionService = new ActionService(logger, eventBus, simulation);
-  const tickService = new TickService(logger, eventBus, simulation, actionService, observability);
+  const actionService = new ActionService(eventBus, simulation);
+  const tickService = new TickService(eventBus, simulation, actionService, observability);
 
   // Don't auto-start the loop in tests
   tickService.stopLoop();
 
-  return { tickService, eventBus, simulation, actionService, observability, logger };
+  return { tickService, eventBus, simulation, actionService, observability };
 }
 
 describe('TickService', () => {

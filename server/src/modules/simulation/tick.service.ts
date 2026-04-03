@@ -1,5 +1,4 @@
-import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { AppLogger } from '../../common/logger.service';
+import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import {
   DomainEventBus,
   generateEventId,
@@ -26,6 +25,7 @@ export interface TickMetrics {
 
 @Injectable()
 export class TickService implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(TickService.name);
   private intervalHandle: ReturnType<typeof setInterval> | null = null;
   private lastGameDay = -1;
   private wsServer: Server | null = null;
@@ -40,7 +40,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private orderMatcher: OrderMatcher | null = null;
 
   constructor(
-    private readonly logger: AppLogger,
     private readonly eventBus: DomainEventBus,
     private readonly simulationService: SimulationService,
     private readonly actionService: ActionService,
