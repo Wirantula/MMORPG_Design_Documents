@@ -17,7 +17,7 @@ This tracker mirrors the source backlog in `../MMORPG_Backlog_Agentic_Developmen
 - Epic 6 Progression and skill systems - `todo`
 - Epic 7 Needs, health and life-sim loops - `todo`
 - Epic 8 Items, crafting and production - `todo`
-- Epic 9 Markets, trade and contracts - `todo`
+- Epic 9 Markets, trade and contracts - `active` (9.1, 9.2, 9.3 in review)
 - Epic 10 Settlements, nations and law - `todo`
 - Epic 11 World graph, travel and unlocks - `todo`
 - Epic 12 Admin, moderation and operations - `todo`

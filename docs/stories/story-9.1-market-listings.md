@@ -1,5 +1,5 @@
 # Story 9.1 — Market Listings and Order Book
-**Epic:** 9 | **Role:** Economy Agent | **Status:** Blocked on 8.1 + 8.2 + 3.2
+**Epic:** 9 | **Role:** Economy Agent | **Status:** In Progress
 
 ## Problem / intent
 Traders need to buy and sell goods through reliable player-driven market systems.

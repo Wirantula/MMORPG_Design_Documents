@@ -1,5 +1,5 @@
 # Story 9.2 — Contracts
-**Epic:** 9 | **Role:** Economy Agent | **Status:** Blocked on 9.1
+**Epic:** 9 | **Role:** Economy Agent | **Status:** In Progress
 
 ## Problem / intent
 Labor and delivery contracts let players monetize services, not just goods.

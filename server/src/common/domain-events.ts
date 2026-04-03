@@ -44,18 +44,59 @@ export interface OfflineReportGeneratedPayload {
   warnings: string[];
 }
 
+export interface MarketTradeExecutedPayload {
+  listingId: string;
+  orderId: string;
+  canonicalId: string;
+  sellerId: string;
+  buyerId: string;
+  price: number;
+  quantity: number;
+  fee: number;
+}
+
+export interface ContractCompletedPayload {
+  contractId: string;
+  type: string;
+  offererId: string;
+  acceptorId: string;
+  escrowAmount: number;
+}
+
+export interface ContractBreachedPayload {
+  contractId: string;
+  type: string;
+  breachedById: string;
+  nonBreachingId: string;
+  escrowAmount: number;
+}
+
+export interface EconomyExportCompletedPayload {
+  filePath: string;
+  rowCount: number;
+  gameDay: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
 export type ActionCancelled = DomainEvent<'ActionCancelled', ActionCancelledPayload>;
 export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', OfflineReportGeneratedPayload>;
+export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
+export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
+export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
   | ActionSubmitted
   | ActionResolved
   | ActionCancelled
-  | OfflineReportGenerated;
+  | OfflineReportGenerated
+  | MarketTradeExecuted
+  | ContractCompleted
+  | ContractBreached
+  | EconomyExportCompleted;
 
 // ── Listener signature ────────────────────────────────────────────
 
