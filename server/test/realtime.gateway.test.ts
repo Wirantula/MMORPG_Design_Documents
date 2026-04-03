@@ -50,8 +50,7 @@ function createServices() {
   const jwtService = new JwtService({ secret: JWT_SECRET, signOptions: { expiresIn: '15m' } });
   const authService = new AuthService(accountsService, jwtService, eventBus);
 
-  const mockModuleRef = { get: vi.fn().mockReturnValue(tickService) } as unknown as import('@nestjs/core').ModuleRef;
-  const gateway = new RealtimeGateway(mockModuleRef, simulationService, actionService, authService, eventBus);
+  const gateway = new RealtimeGateway(simulationService, actionService, authService, eventBus);
 
   return { gateway, eventBus, jwtService, authService, simulationService };
 }

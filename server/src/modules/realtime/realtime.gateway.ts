@@ -1,18 +1,15 @@
 import { Logger } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
 import {
   ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { SimulationService } from '../simulation/simulation.service';
-import { TickService } from '../simulation/tick.service';
 import { ActionService } from '../simulation/actions/action.service';
 import { AuthService } from '../auth/auth.service';
 import { parseCommandEnvelope } from './dto/command.dto';
@@ -44,9 +41,7 @@ const PONG_TIMEOUT_MS = 10_000;
   pingInterval: HEARTBEAT_INTERVAL_MS,
   pingTimeout: PONG_TIMEOUT_MS,
 })
-export class RealtimeGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit
-{
+export class RealtimeGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(RealtimeGateway.name);
 
   /** Map of socket.id → authenticated account ID. */
@@ -56,20 +51,11 @@ export class RealtimeGateway
   server!: Server;
 
   constructor(
-    private readonly moduleRef: ModuleRef,
     private readonly simulationService: SimulationService,
     private readonly actionService: ActionService,
     private readonly authService: AuthService,
     private readonly eventBus: DomainEventBus,
   ) {}
-
-  // ── Lifecycle ───────────────────────────────────────────────────
-
-  afterInit(server: Server): void {
-    const tickService = this.moduleRef.get(TickService, { strict: false });
-    tickService?.setWsServer(server);
-    this.logger.log('WebSocket server initialised', 'RealtimeGateway');
-  }
 
   handleConnection(client: Socket): void {
     // Extract JWT from handshake query param "auth"

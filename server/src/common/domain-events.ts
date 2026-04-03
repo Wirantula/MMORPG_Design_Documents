@@ -71,6 +71,15 @@ export interface ContractBreachedPayload {
   escrowAmount: number;
 }
 
+export interface CurrencyTransferredPayload {
+  transactionId: string;
+  fromId: string | null;
+  toId: string | null;
+  currencyId: string;
+  amount: number;
+  reason: string;
+}
+
 export interface EconomyExportCompletedPayload {
   filePath: string;
   rowCount: number;
@@ -108,6 +117,20 @@ export interface ConnectionClosedPayload {
   reason: string;
 }
 
+export interface StatsInitialisedPayload {
+  characterId: string;
+  statFamilyCount: number;
+  potentialKeyCount: number;
+}
+
+export interface LifeStageTransitionPayload {
+  characterId: string;
+  previousStage: string;
+  newStage: string;
+  ageInGameYears: number;
+  gameDay: number;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -116,12 +139,15 @@ export type OfflineReportGenerated = DomainEvent<'OfflineReportGenerated', Offli
 export type MarketTradeExecuted = DomainEvent<'MarketTradeExecuted', MarketTradeExecutedPayload>;
 export type ContractCompleted = DomainEvent<'ContractCompleted', ContractCompletedPayload>;
 export type ContractBreached = DomainEvent<'ContractBreached', ContractBreachedPayload>;
+export type CurrencyTransferred = DomainEvent<'CurrencyTransferred', CurrencyTransferredPayload>;
 export type EconomyExportCompleted = DomainEvent<'EconomyExportCompleted', EconomyExportCompletedPayload>;
 export type AccountCreated = DomainEvent<'AccountCreated', AccountCreatedPayload>;
 export type AccountLoggedIn = DomainEvent<'AccountLoggedIn', AccountLoggedInPayload>;
 export type CharacterBorn = DomainEvent<'CharacterBorn', CharacterBornPayload>;
 export type ConnectionEstablished = DomainEvent<'ConnectionEstablished', ConnectionEstablishedPayload>;
 export type ConnectionClosed = DomainEvent<'ConnectionClosed', ConnectionClosedPayload>;
+export type StatsInitialised = DomainEvent<'StatsInitialised', StatsInitialisedPayload>;
+export type LifeStageTransition = DomainEvent<'LifeStageTransition', LifeStageTransitionPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -130,6 +156,7 @@ export type KnownDomainEvent =
   | ActionCancelled
   | OfflineReportGenerated
   | MarketTradeExecuted
+  | CurrencyTransferred
   | ContractCompleted
   | ContractBreached
   | EconomyExportCompleted
@@ -137,7 +164,9 @@ export type KnownDomainEvent =
   | AccountLoggedIn
   | CharacterBorn
   | ConnectionEstablished
-  | ConnectionClosed;
+  | ConnectionClosed
+  | StatsInitialised
+  | LifeStageTransition;
 
 // ── Listener signature ────────────────────────────────────────────
 
