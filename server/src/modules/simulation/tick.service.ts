@@ -7,6 +7,8 @@ import {
 import { SimulationService } from './simulation.service';
 import { ActionService } from './actions/action.service';
 import { ObservabilityService } from '../observability/observability.service';
+import type { LifecycleService } from '../characters/lifecycle/lifecycle.service';
+import type { FamilyService } from './family/family.service';
 
 /** Minimal interface so TickService can call matchOrders without a hard import cycle. */
 export interface OrderMatcher {
@@ -118,7 +120,7 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
         const lc = this.lifecycleService;
         this.familyService.resolveFamilySupport(
           gameDay,
-          (characterId) => lc.getCharacter(characterId)?.currentStage,
+          (characterId: string) => lc.getCharacter(characterId)?.currentStage,
         );
       }
 
