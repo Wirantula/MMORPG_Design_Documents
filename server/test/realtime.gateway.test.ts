@@ -3,6 +3,7 @@ import { RealtimeGateway } from '../src/modules/realtime/realtime.gateway';
 import { SimulationService } from '../src/modules/simulation/simulation.service';
 import { AppLogger } from '../src/common/logger.service';
 import type { ServerEventEnvelope, AckPayload } from '../src/contracts/message-envelope';
+import type { Socket } from 'socket.io';
 
 function createMockSocket() {
   const emittedEvents: Array<{ event: string; data: unknown }> = [];
@@ -36,7 +37,7 @@ describe('RealtimeGateway', () => {
         payload: { nonce: 'abc' },
       };
 
-      gateway.handleCommand(socket as any, validCommand);
+      gateway.handleCommand(socket as unknown as Socket, validCommand);
 
       expect(socket.emit).toHaveBeenCalledTimes(2);
 
@@ -61,7 +62,7 @@ describe('RealtimeGateway', () => {
       const gateway = createGateway();
       const socket = createMockSocket();
 
-      gateway.handleCommand(socket as any, {
+      gateway.handleCommand(socket as unknown as Socket, {
         id: 'cmd-002',
         type: 'action.submit',
         timestamp: '2200-01-01T00:00:00.000Z',
@@ -77,7 +78,7 @@ describe('RealtimeGateway', () => {
       const socket = createMockSocket();
 
       expect(() =>
-        gateway.handleCommand(socket as any, {
+        gateway.handleCommand(socket as unknown as Socket, {
           id: 'cmd-003',
           timestamp: '2200-01-01T00:00:00.000Z',
         }),
@@ -88,19 +89,19 @@ describe('RealtimeGateway', () => {
       const gateway = createGateway();
       const socket = createMockSocket();
 
-      expect(() => gateway.handleCommand(socket as any, null)).toThrow();
-      expect(() => gateway.handleCommand(socket as any, 'garbage')).toThrow();
-      expect(() => gateway.handleCommand(socket as any, 42)).toThrow();
+      expect(() => gateway.handleCommand(socket as unknown as Socket, null)).toThrow();
+      expect(() => gateway.handleCommand(socket as unknown as Socket, 'garbage')).toThrow();
+      expect(() => gateway.handleCommand(socket as unknown as Socket, 42)).toThrow();
     });
   });
 
   describe('handleConnection / handleDisconnect', () => {
     it('logs on connection', () => {
       const gateway = createGateway();
-      const logger = (gateway as any).logger as AppLogger;
+      const logger = (gateway as unknown as { logger: AppLogger }).logger;
       const logSpy = vi.spyOn(logger, 'log');
 
-      gateway.handleConnection({ id: 'socket-abc' } as any);
+      gateway.handleConnection({ id: 'socket-abc' } as unknown as Socket);
 
       expect(logSpy).toHaveBeenCalledWith(
         expect.stringContaining('socket-abc'),
@@ -110,10 +111,10 @@ describe('RealtimeGateway', () => {
 
     it('logs on disconnection', () => {
       const gateway = createGateway();
-      const logger = (gateway as any).logger as AppLogger;
+      const logger = (gateway as unknown as { logger: AppLogger }).logger;
       const logSpy = vi.spyOn(logger, 'log');
 
-      gateway.handleDisconnect({ id: 'socket-abc' } as any);
+      gateway.handleDisconnect({ id: 'socket-abc' } as unknown as Socket);
 
       expect(logSpy).toHaveBeenCalledWith(
         expect.stringContaining('socket-abc'),

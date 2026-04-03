@@ -8,14 +8,14 @@ class MockWebSocket {
 
   readyState = MockWebSocket.OPEN;
   url: string;
-  listeners: Map<string, Function[]> = new Map();
+  listeners: Map<string, ((...args: unknown[]) => void)[]> = new Map();
   sentMessages: string[] = [];
 
   constructor(url: string) {
     this.url = url;
   }
 
-  addEventListener(event: string, handler: Function) {
+  addEventListener(event: string, handler: (...args: unknown[]) => void) {
     const list = this.listeners.get(event) ?? [];
     list.push(handler);
     this.listeners.set(event, list);
@@ -31,14 +31,12 @@ class MockWebSocket {
 }
 
 describe('RealtimeClient', () => {
-  const originalWebSocket = globalThis.WebSocket;
-
   beforeEach(() => {
-    (globalThis as any).WebSocket = MockWebSocket;
+    vi.stubGlobal('WebSocket', MockWebSocket);
   });
 
   afterEach(() => {
-    (globalThis as any).WebSocket = originalWebSocket;
+    vi.unstubAllGlobals();
   });
 
   it('creates a WebSocket on connect', () => {
@@ -48,7 +46,7 @@ describe('RealtimeClient', () => {
     client.connect(onMessage);
 
     // Access internal socket to verify connection
-    const socket = (client as any).socket as MockWebSocket;
+    const socket = (client as unknown as { socket: MockWebSocket }).socket;
     expect(socket).toBeInstanceOf(MockWebSocket);
     expect(socket.url).toContain('/ws');
   });
@@ -59,7 +57,7 @@ describe('RealtimeClient', () => {
 
     client.connect(onMessage);
 
-    const socket = (client as any).socket as MockWebSocket;
+    const socket = (client as unknown as { socket: MockWebSocket }).socket;
     const listeners = socket.listeners.get('message') ?? [];
     expect(listeners.length).toBe(1);
   });
@@ -68,12 +66,12 @@ describe('RealtimeClient', () => {
     const client = new RealtimeClient();
     client.connect(vi.fn());
 
-    const socket = (client as any).socket as MockWebSocket;
+    const socket = (client as unknown as { socket: MockWebSocket }).socket;
     expect(socket).not.toBeNull();
 
     client.disconnect();
 
-    expect((client as any).socket).toBeNull();
+    expect((client as unknown as { socket: WebSocket | null }).socket).toBeNull();
     expect(socket.readyState).toBe(MockWebSocket.CLOSED);
   });
 
@@ -95,7 +93,7 @@ describe('RealtimeClient', () => {
 
     client.sendCommand(envelope);
 
-    const socket = (client as any).socket as MockWebSocket;
+    const socket = (client as unknown as { socket: MockWebSocket }).socket;
     expect(socket.sentMessages.length).toBe(1);
 
     const sent = JSON.parse(socket.sentMessages[0]);
