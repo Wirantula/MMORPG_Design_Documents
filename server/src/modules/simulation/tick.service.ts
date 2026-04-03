@@ -7,8 +7,8 @@ import {
 import { SimulationService } from './simulation.service';
 import { ActionService } from './actions/action.service';
 import { ObservabilityService } from '../observability/observability.service';
-import type { ServerEventEnvelope } from '../../contracts/message-envelope';
-import type { Server } from 'socket.io';
+import type { LifecycleService } from '../characters/lifecycle/lifecycle.service';
+import type { FamilyService } from './family/family.service';
 
 /** Minimal interface so TickService can call matchOrders without a hard import cycle. */
 export interface OrderMatcher {
@@ -28,7 +28,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(TickService.name);
   private intervalHandle: ReturnType<typeof setInterval> | null = null;
   private lastGameDay = -1;
-  private wsServer: Server | null = null;
 
   private _tickCount = 0;
   private _lastTickDurationMs = 0;
@@ -38,6 +37,8 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
   private _lastTickExpectedMs = 0;
 
   private orderMatcher: OrderMatcher | null = null;
+  private lifecycleService: LifecycleService | null = null;
+  private familyService: FamilyService | null = null;
 
   constructor(
     private readonly eventBus: DomainEventBus,
@@ -46,14 +47,19 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     private readonly observabilityService: ObservabilityService,
   ) {}
 
+  /** Injected after bootstrap so there's no hard dependency. */
+  setLifecycleService(service: LifecycleService): void {
+    this.lifecycleService = service;
+  }
+
+  /** Injected after bootstrap so there's no hard dependency. */
+  setFamilyService(service: FamilyService): void {
+    this.familyService = service;
+  }
+
   /** Injected by EconomyModule after bootstrap so there's no hard dependency. */
   setOrderMatcher(matcher: OrderMatcher): void {
     this.orderMatcher = matcher;
-  }
-
-  /** Called by RealtimeGateway once the WS server is ready. */
-  setWsServer(server: Server): void {
-    this.wsServer = server;
   }
 
   onModuleInit(): void {
@@ -104,6 +110,20 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
     this.lastGameDay = gameDay;
 
     if (dayChanged) {
+      // Process life-stage transitions
+      if (this.lifecycleService) {
+        this.lifecycleService.processCharacterLifecycles(gameDay);
+      }
+
+      // Resolve family NPC support for protected characters
+      if (this.familyService && this.lifecycleService) {
+        const lc = this.lifecycleService;
+        this.familyService.resolveFamilySupport(
+          gameDay,
+          (characterId) => lc.getCharacter(characterId)?.currentStage,
+        );
+      }
+
       const snapshot = this.simulationService.getWorldSnapshot(nowMs);
       const event: TickCompleted = {
         eventId: generateEventId(),
@@ -121,18 +141,6 @@ export class TickService implements OnModuleInit, OnModuleDestroy {
         `Game day ${gameDay} completed (drift ${this._driftMs} ms)`,
         'TickService',
       );
-    }
-
-    // Broadcast tick to connected WS clients
-    if (this.wsServer) {
-      const snapshot = this.simulationService.getWorldSnapshot(nowMs);
-      const tickEvent: ServerEventEnvelope = {
-        id: generateEventId(),
-        type: 'tick',
-        timestamp: new Date(nowMs).toISOString(),
-        payload: snapshot,
-      };
-      this.wsServer.emit('event', tickEvent);
     }
 
     // Metrics bookkeeping

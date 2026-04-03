@@ -1,19 +1,19 @@
 # Story 2.1 — Account Schema and Identity Flows
-**Epic:** 2 | **Role:** Backend Agent | **Status:** Ready (merge 1.2 first)
+**Epic:** 2 | **Role:** Backend Agent | **Status:** Review
 
 ## Problem / intent
 Players must register, log in, and hold a session so lineage and settings persist.
 
 ## Acceptance criteria
-- [ ] POST /api/auth/register creates account with bcrypt-hashed password
-- [ ] POST /api/auth/login returns JWT access token + refresh token
-- [ ] POST /api/auth/refresh issues new access token
-- [ ] POST /api/auth/logout invalidates refresh token
-- [ ] accounts table: id (uuid), email (unique), password_hash, created_at, updated_at
-- [ ] refresh_tokens table: id, account_id (fk), token_hash, expires_at
-- [ ] Zod validation; invalid input → 400
-- [ ] Audit events: AccountCreated, AccountLoggedIn via domain-events.ts
-- [ ] Unit tests: register, login, duplicate email, bad password, refresh, logout
+- [x] POST /api/auth/register creates account with bcrypt-hashed password
+- [x] POST /api/auth/login returns JWT access token + refresh token
+- [x] POST /api/auth/refresh issues new access token
+- [x] POST /api/auth/logout invalidates refresh token
+- [x] accounts table: id (uuid), email (unique), password_hash, created_at, updated_at
+- [x] refresh_tokens table: id, account_id (fk), token_hash, expires_at
+- [x] Zod validation; invalid input → 400
+- [x] Audit events: AccountCreated, AccountLoggedIn via domain-events.ts
+- [x] Unit tests: register, login, duplicate email, bad password, refresh, logout
 
 ## Dependencies
 - 1.1 ✅  |  1.2 (merge before firing)
