@@ -34,7 +34,7 @@ describe('loadEnv', () => {
     const env = loadEnv();
 
     expect(env.nodeEnv).toBe('development');
-    expect(env.serverPort).toBe(3001);
+    expect(env.serverPort).toBe(1545);
     expect(env.logLevel).toBe('info');
     expect(env.postgres.host).toBe('localhost');
     expect(env.postgres.port).toBe(5432);

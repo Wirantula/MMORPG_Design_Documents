@@ -1,5 +1,5 @@
-const DEFAULT_API_BASE = 'http://localhost:3001/api';
-const DEFAULT_WS_BASE = 'ws://localhost:3001/ws';
+const DEFAULT_API_BASE = 'http://localhost:1545/api';
+const DEFAULT_WS_BASE = 'ws://localhost:1545/ws';
 
 export interface RuntimeConfig {
   apiBaseUrl: string;

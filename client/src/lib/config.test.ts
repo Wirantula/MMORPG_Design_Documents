@@ -19,8 +19,8 @@ describe('readRuntimeConfig', () => {
     const { readRuntimeConfig } = await import('./config');
     const config = readRuntimeConfig();
 
-    expect(config.apiBaseUrl).toBe('http://localhost:3001/api');
-    expect(config.wsBaseUrl).toBe('ws://localhost:3001/ws');
+    expect(config.apiBaseUrl).toBe('http://localhost:1545/api');
+    expect(config.wsBaseUrl).toBe('ws://localhost:1545/ws');
   });
 
   it('reads overridden env vars', async () => {
