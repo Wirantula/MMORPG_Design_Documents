@@ -1,8 +1,11 @@
 import { Body, Controller, HttpCode, HttpException, HttpStatus, Post, Req } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { registerSchema, loginSchema, refreshSchema, logoutSchema } from './auth.dto';
 import type { Request } from 'express';
 
+// Rate limit: 10 requests per 60 seconds per IP on all auth endpoints.
+@Throttle({ default: { ttl: 60_000, limit: 10 } })
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
