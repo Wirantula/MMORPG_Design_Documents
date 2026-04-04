@@ -37,6 +37,7 @@ export class AccountsService {
       id: randomUUID(),
       email: normalised,
       passwordHash,
+      role: 'player',
       createdAt: now,
       updatedAt: now,
     };

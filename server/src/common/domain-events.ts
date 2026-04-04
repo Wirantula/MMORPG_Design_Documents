@@ -180,6 +180,11 @@ export interface ConditionResolvedPayload {
   severity: number;
 }
 
+export interface MaintenanceModeToggledPayload {
+  enabled: boolean;
+  adminId: string;
+}
+
 export type TickCompleted = DomainEvent<'TickCompleted', TickCompletedPayload>;
 export type ActionSubmitted = DomainEvent<'ActionSubmitted', ActionSubmittedPayload>;
 export type ActionResolved = DomainEvent<'ActionResolved', ActionResolvedPayload>;
@@ -204,6 +209,7 @@ export type NeedsCriticalWarning = DomainEvent<'NeedsCriticalWarning', NeedsCrit
 export type SkillLevelUp = DomainEvent<'SkillLevelUp', SkillLevelUpPayload>;
 export type ConditionApplied = DomainEvent<'ConditionApplied', ConditionAppliedPayload>;
 export type ConditionResolved = DomainEvent<'ConditionResolved', ConditionResolvedPayload>;
+export type MaintenanceModeToggled = DomainEvent<'MaintenanceModeToggled', MaintenanceModeToggledPayload>;
 
 export type KnownDomainEvent =
   | TickCompleted
@@ -229,7 +235,8 @@ export type KnownDomainEvent =
   | NeedsCriticalWarning
   | SkillLevelUp
   | ConditionApplied
-  | ConditionResolved;
+  | ConditionResolved
+  | MaintenanceModeToggled;
 
 // ── Listener signature ────────────────────────────────────────────
 

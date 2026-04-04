@@ -14,6 +14,7 @@ import { NeedsModule } from './modules/needs/needs.module';
 import { SecurityModule } from './modules/security/security.module';
 import { ProgressionModule } from './modules/progression/progression.module';
 import { TravelModule } from './modules/travel/travel.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   // SharedModule MUST be first — its @Global() providers (DomainEventBus, AppLogger)
@@ -34,6 +35,7 @@ import { TravelModule } from './modules/travel/travel.module';
     NeedsModule,
     ProgressionModule,
     TravelModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

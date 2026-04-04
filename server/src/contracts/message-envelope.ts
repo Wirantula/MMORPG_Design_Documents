@@ -9,7 +9,8 @@ export type ServerEventType =
   | 'action.cancelled'
   | 'character.update'
   | 'notification.new'
-  | 'chat.message';
+  | 'chat.message'
+  | 'maintenance';
 
 export interface Envelope<TType extends string, TPayload = unknown> {
   id: string;

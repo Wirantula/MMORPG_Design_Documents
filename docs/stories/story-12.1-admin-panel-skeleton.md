@@ -1,17 +1,17 @@
 # Story 12.1 — Admin Panel Skeleton
-**Epic:** 12 | **Role:** Backend Agent + Frontend Agent | **Status:** Blocked on 2.1 + 1.3
+**Epic:** 12 | **Role:** Backend Agent + Frontend Agent | **Status:** Review
 
 ## Problem / intent
 The host needs a browser management panel to run the game from a single application.
 
 ## Acceptance criteria
-- [ ] /admin route in Next.js client is protected (redirects to /login if no admin JWT)
-- [ ] Admin dashboard shows: server uptime, connected_clients, active_characters, last_tick_at
-- [ ] Admin role gated by account.role = 'admin' (new column on accounts table)
-- [ ] Service status page: DB connection, Redis connection, tick health
-- [ ] Maintenance mode toggle: POST /api/admin/maintenance (broadcasts to all WS clients)
-- [ ] Audit log page: last 100 admin actions
-- [ ] Unit tests: admin JWT guard, maintenance broadcast, audit log write
+- [x] /admin route in Next.js client is protected (redirects to /login if no admin JWT)
+- [x] Admin dashboard shows: server uptime, connected_clients, active_characters, last_tick_at
+- [x] Admin role gated by account.role = 'admin' (new column on accounts table)
+- [x] Service status page: DB connection, Redis connection, tick health
+- [x] Maintenance mode toggle: POST /api/admin/maintenance (broadcasts to all WS clients)
+- [x] Audit log page: last 100 admin actions
+- [x] Unit tests: admin JWT guard, maintenance broadcast, audit log write
 
 ## Dependencies
 - 2.1 ✅  |  1.3 ✅
