@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { XpService } from './xp.service';
 
-@Controller('api/admin/balance')
+@Controller('admin/balance')
 export class ProgressionController {
   constructor(private readonly xpService: XpService) {}
 
