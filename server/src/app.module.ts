@@ -15,6 +15,7 @@ import { SecurityModule } from './modules/security/security.module';
 import { ProgressionModule } from './modules/progression/progression.module';
 import { TravelModule } from './modules/travel/travel.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { ModerationModule } from './modules/moderation/moderation.module';
 import { OpsModule } from './modules/ops/ops.module';
 
 @Module({
@@ -37,6 +38,7 @@ import { OpsModule } from './modules/ops/ops.module';
     ProgressionModule,
     TravelModule,
     AdminModule,
+    ModerationModule,
     OpsModule,
   ],
 })
