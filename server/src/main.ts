@@ -4,6 +4,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { loadEnv } from './config/env';
 import { AppLogger } from './common/logger.service';
+import { OpsService } from './modules/ops/ops.service';
 
 async function bootstrap(): Promise<void> {
   const env = loadEnv();
@@ -15,6 +16,19 @@ async function bootstrap(): Promise<void> {
   const logger = app.get(AppLogger);
   app.useLogger(logger);
   app.setGlobalPrefix('api');
+
+  // ── Migration pre-flight check ─────────────────────────────────
+  const opsService = app.get(OpsService);
+  const migrationResult = opsService.checkMigrations();
+  if (!migrationResult.ok) {
+    logger.error(
+      `Migration check FAILED: applied=${migrationResult.applied} expected=${migrationResult.expected} missing=[${migrationResult.missing.join(', ')}]`,
+      undefined,
+      'Bootstrap',
+    );
+    process.exit(1);
+  }
+  logger.log('Migration check passed', 'Bootstrap');
 
   // ── Security hardening ────────────────────────────────────────
   // CSRF: enforce SameSite=Strict on all cookies.
