@@ -1,0 +1,45 @@
+# CybaWorld Production Caddyfile
+# Caddy 2 — automatic HTTPS via Let's Encrypt / ZeroSSL
+# Domain is injected via {$DOMAIN} environment variable.
+
+{$DOMAIN} {
+	# ── Logging ──────────────────────────────────────────────
+	log {
+		output stdout
+		format json
+		level INFO
+	}
+
+	# ── WebSocket: /ws ───────────────────────────────────────
+	# Must appear before /api so the path is matched first.
+	handle /ws {
+		reverse_proxy server:1545 {
+			header_up Connection {>Connection}
+			header_up Upgrade {>Upgrade}
+		}
+	}
+
+	# ── REST API: /api/* ─────────────────────────────────────
+	handle /api/* {
+		reverse_proxy server:1545
+	}
+
+	# ── Admin panel: /admin/* ────────────────────────────────
+	handle /admin/* {
+		reverse_proxy server:1545
+	}
+
+	# ── Frontend (Next.js): everything else ──────────────────
+	handle {
+		reverse_proxy web:3000
+	}
+
+	# ── Security headers ────────────────────────────────────
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}
